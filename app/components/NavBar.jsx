@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const NavBar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const isHomePage = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +19,61 @@ const NavBar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("user");
+
+      if (token && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          setIsLoggedIn(true);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuthStatus();
+
+    // Listen for storage changes (when user logs in/out in another tab)
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser(null);
+    router.push("/");
+  };
+
+  const handleProfileClick = () => {
+    if (user) {
+      if (!user.is_approved) {
+        router.push("/profile/pending");
+      } else {
+        if (user.usertype === 1) {
+          router.push("/profile/farmer");
+        } else if (user.usertype === 2) {
+          router.push("/profile/investor");
+        }
+      }
+    }
+  };
 
   const getLinkClasses = (path) => {
     const isActive = pathname === path;
@@ -66,19 +124,47 @@ const NavBar = () => {
           </Link>
         </div>
 
-        <div className="flex space-x-4">
-          <Link
-            href="/auth/login"
-            className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Login
-          </Link>
-          <Link
-            href="/auth/register"
-            className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Join Us
-          </Link>
+        <div className="flex space-x-4 items-center">
+          {isLoggedIn && user ? (
+            <>
+              {/* User Profile Info */}
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 border border-green-400 rounded-lg hover:bg-green-600/30 transition-colors"
+              >
+                <span className="text-lg">
+                  {user.usertype === 1 ? "🌾" : "💎"}
+                </span>
+                <span className="text-green-300 font-medium">
+                  {user.first_name} {user.last_name}
+                </span>
+              </button>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Login and Join Us buttons for non-logged in users */}
+              <Link
+                href="/auth/login"
+                className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/auth/register"
+                className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Join Us
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </div>

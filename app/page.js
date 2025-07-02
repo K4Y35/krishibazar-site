@@ -11,9 +11,6 @@ import {
   FaChartLine,
   FaShoppingCart,
   FaMosque,
-  FaUserTie,
-  FaStore,
-  FaTractor,
 } from "react-icons/fa";
 import { GiCow, GiFarmer } from "react-icons/gi";
 
@@ -51,11 +48,12 @@ const Home = () => {
           autoPlay
           loop
           playsInline
-          className="absolute inset-0 h-full w-full object-cover -z-20"
+          className="absolute inset-0 h-full w-full object-cover -z-20 "
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/60 -z-10" />
 
         <NavBar />
+    
         <HeroContent />
       </div>
 
@@ -68,7 +66,7 @@ const Home = () => {
             alt=""
             width={80}
             height={80}
-            className="absolute top-10 right-10 opacity-20 rotate-12 animate-bounce"
+            className="absolute top-10 right-10 opacity-40 rotate-12 animate-bounce"
             style={{ animationDelay: "0.5s", animationDuration: "4s" }}
           />
           <Image
@@ -79,9 +77,11 @@ const Home = () => {
             className="absolute bottom-20 left-10 opacity-25 -rotate-12 animate-pulse"
             style={{ animationDelay: "1.5s", animationDuration: "3s" }}
           />
+          
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
+          
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <motion.div
               className="flex-1 lg:w-1/2"

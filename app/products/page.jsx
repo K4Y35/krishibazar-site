@@ -8,14 +8,11 @@ import Footer from "../components/Footer";
 
 const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [priceRange, setPriceRange] = useState("all");
 
   const categories = [
     { id: "all", label: "All Products", icon: "🛒", color: "gray" },
     { id: "vegetables", label: "Vegetables", icon: "🥬", color: "green" },
-    { id: "fruits", label: "Fruits", icon: "🍎", color: "red" },
-    { id: "grains", label: "Grains", icon: "🌾", color: "amber" },
-    { id: "herbs", label: "Herbs & Spices", icon: "🌿", color: "green" }
+    { id: "grains", label: "Rice", icon: "🌾", color: "amber" },
   ];
 
   const products = [
@@ -27,17 +24,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 5000,
-              image: "/images/vege1.png",
-        origin: "Punjab Farms",
+      image: "/images/vege1.png",
+      origin: "Punjab Farms",
       inStock: true,
-      description: "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption.",
+      description:
+        "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption.",
       nutritionalInfo: "Rich in Vitamin C, Lycopene, and Potassium",
       harvestDate: "2024-03-10",
       shelfLife: "7-10 days",
       farmer: "Hassan Ali Farm",
       certifications: ["Organic", "Pesticide-Free"],
       rating: 4.8,
-      reviews: 127
+      reviews: 127,
     },
     {
       id: 2,
@@ -47,17 +45,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 3000,
-              image: "/images/vege2.png",
-        origin: "Sindh Farms",
+      image: "/images/vege2.png",
+      origin: "Sindh Farms",
       inStock: true,
-      description: "Fresh, pungent red onions with excellent storage life and rich flavor.",
+      description:
+        "Fresh, pungent red onions with excellent storage life and rich flavor.",
       nutritionalInfo: "High in Vitamin C, Fiber, and Antioxidants",
       harvestDate: "2024-03-08",
       shelfLife: "30-45 days",
       farmer: "Malik Brothers Farm",
       certifications: ["Natural", "Non-GMO"],
       rating: 4.6,
-      reviews: 89
+      reviews: 89,
     },
     {
       id: 3,
@@ -71,55 +70,17 @@ const ProductsPage = () => {
 
       origin: "KPK Highlands",
       inStock: true,
-      description: "High-quality potatoes, ideal for cooking, frying, and commercial use.",
+      description:
+        "High-quality potatoes, ideal for cooking, frying, and commercial use.",
       nutritionalInfo: "Rich in Carbohydrates, Vitamin C, and Potassium",
       harvestDate: "2024-03-05",
       shelfLife: "45-60 days",
       farmer: "Mountain View Farms",
       certifications: ["Organic", "Premium Grade"],
       rating: 4.9,
-      reviews: 203
+      reviews: 203,
     },
-    {
-      id: 4,
-      name: "Fresh Garlic",
-      category: "herbs",
-      price: 180,
-      unit: "per kg",
-      minOrder: 50,
-      maxOrder: 1000,
-              image: "/images/vege4.png",
-        origin: "Balochistan",
-      inStock: true,
-      description: "Aromatic fresh garlic cloves with strong flavor and excellent medicinal properties.",
-      nutritionalInfo: "Rich in Allicin, Vitamin B6, and Manganese",
-      harvestDate: "2024-03-01",
-      shelfLife: "90-120 days",
-      farmer: "Spice Valley Cooperative",
-      certifications: ["Organic", "Sun-Dried"],
-      rating: 4.7,
-      reviews: 156
-    },
-    {
-      id: 5,
-      name: "Fresh Oranges",
-      category: "fruits",
-      price: 60,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 2000,
-              image: "/images/vege5.png",
-        origin: "Sargodha Orchards",
-      inStock: true,
-      description: "Juicy, sweet oranges packed with natural vitamins and fresh citrus flavor.",
-      nutritionalInfo: "High in Vitamin C, Folate, and Fiber",
-      harvestDate: "2024-03-12",
-      shelfLife: "14-21 days",
-      farmer: "Citrus Gold Farm",
-      certifications: ["Fresh Picked", "Premium Quality"],
-      rating: 4.5,
-      reviews: 94
-    },
+
     {
       id: 6,
       name: "Basmati Rice",
@@ -132,14 +93,15 @@ const ProductsPage = () => {
 
       origin: "Punjab Rice Mills",
       inStock: true,
-      description: "Premium aged Basmati rice with long grains and aromatic fragrance.",
+      description:
+        "Premium aged Basmati rice with long grains and aromatic fragrance.",
       nutritionalInfo: "Rich in Carbohydrates and Protein",
       harvestDate: "2023-11-15",
       shelfLife: "12-18 months",
       farmer: "Golden Grain Cooperative",
       certifications: ["Aged 2 Years", "Export Quality"],
       rating: 4.9,
-      reviews: 342
+      reviews: 342,
     },
     {
       id: 7,
@@ -149,39 +111,20 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 50,
       maxOrder: 1000,
-              image: "/images/vege7.png",
-        origin: "Sindh Farms",
+      image: "/images/vege7.png",
+      origin: "Sindh Farms",
       inStock: true,
-      description: "Fresh, spicy green chilies perfect for cooking and food processing.",
+      description:
+        "Fresh, spicy green chilies perfect for cooking and food processing.",
       nutritionalInfo: "High in Vitamin C and Capsaicin",
       harvestDate: "2024-03-13",
       shelfLife: "7-10 days",
       farmer: "Spice King Farm",
       certifications: ["Fresh", "Pesticide-Free"],
       rating: 4.4,
-      reviews: 76
+      reviews: 76,
     },
-    {
-      id: 8,
-      name: "Fresh Mangoes",
-      category: "fruits",
-      price: 150,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 1500,
-      image: "/images/vege1.png",
 
-      origin: "Multan Orchards",
-      inStock: false,
-      description: "World-famous Pakistani mangoes with exceptional sweetness and flavor.",
-      nutritionalInfo: "Rich in Vitamin A, C, and Natural Sugars",
-      harvestDate: "Season: May-July",
-      shelfLife: "7-12 days",
-      farmer: "Mango King Orchards",
-      certifications: ["Export Quality", "Hand Picked"],
-      rating: 5.0,
-      reviews: 289
-    },
     {
       id: 9,
       name: "White Onions",
@@ -190,38 +133,20 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 3000,
-              image: "/images/vege2.png",
-        origin: "Punjab Farms",
+      image: "/images/vege2.png",
+      origin: "Punjab Farms",
       inStock: true,
-      description: "Mild-flavored white onions, perfect for cooking and salads.",
+      description:
+        "Mild-flavored white onions, perfect for cooking and salads.",
       nutritionalInfo: "Good source of Vitamin C and Antioxidants",
       harvestDate: "2024-03-07",
       shelfLife: "25-35 days",
       farmer: "Crescent Farm",
       certifications: ["Natural", "Fresh"],
       rating: 4.3,
-      reviews: 67
+      reviews: 67,
     },
-    {
-      id: 10,
-      name: "Fresh Ginger",
-      category: "herbs",
-      price: 200,
-      unit: "per kg",
-      minOrder: 50,
-      maxOrder: 800,
-              image: "/images/vege3.png",
-        origin: "Gilgit-Baltistan",
-      inStock: true,
-      description: "Fresh ginger root with strong aroma and medicinal properties.",
-      nutritionalInfo: "Rich in Gingerol and Anti-inflammatory compounds",
-      harvestDate: "2024-02-28",
-      shelfLife: "60-90 days",
-      farmer: "Mountain Spice Co-op",
-      certifications: ["Organic", "High Potency"],
-      rating: 4.8,
-      reviews: 134
-    },
+
     {
       id: 11,
       name: "Wheat Grain",
@@ -230,17 +155,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 1000,
       maxOrder: 100000,
-              image: "/images/vege4.png",
-        origin: "Punjab Wheat Belt",
+      image: "/images/vege4.png",
+      origin: "Punjab Wheat Belt",
       inStock: true,
-      description: "High-quality wheat grain suitable for flour production and commercial use.",
+      description:
+        "High-quality wheat grain suitable for flour production and commercial use.",
       nutritionalInfo: "Rich in Protein, Fiber, and B Vitamins",
       harvestDate: "2024-04-20",
       shelfLife: "12 months",
       farmer: "Golden Fields Cooperative",
       certifications: ["Clean Grain", "Moisture Controlled"],
       rating: 4.6,
-      reviews: 198
+      reviews: 198,
     },
     {
       id: 12,
@@ -250,17 +176,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 2000,
-              image: "/images/vege5.png",
-        origin: "Quetta Farms",
+      image: "/images/vege5.png",
+      origin: "Quetta Farms",
       inStock: true,
-      description: "Crisp, sweet carrots packed with nutrients and natural sweetness.",
+      description:
+        "Crisp, sweet carrots packed with nutrients and natural sweetness.",
       nutritionalInfo: "High in Beta-Carotene and Vitamin A",
       harvestDate: "2024-03-09",
       shelfLife: "21-30 days",
       farmer: "Valley Fresh Farms",
       certifications: ["Organic", "Premium"],
       rating: 4.5,
-      reviews: 112
+      reviews: 112,
     },
     {
       id: 13,
@@ -270,17 +197,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 1000,
-              image: "/images/vege6.png",
-        origin: "Punjab Farms",
+      image: "/images/vege6.png",
+      origin: "Punjab Farms",
       inStock: true,
-      description: "Fresh, leafy spinach rich in iron and nutrients, perfect for healthy cooking.",
+      description:
+        "Fresh, leafy spinach rich in iron and nutrients, perfect for healthy cooking.",
       nutritionalInfo: "High in Iron, Folate, and Vitamin K",
       harvestDate: "2024-03-14",
       shelfLife: "3-5 days",
       farmer: "Green Leaf Farm",
       certifications: ["Organic", "Fresh Picked"],
       rating: 4.3,
-      reviews: 85
+      reviews: 85,
     },
     {
       id: 14,
@@ -290,17 +218,18 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 2000,
-              image: "/images/vege7.png",
-        origin: "KPK Farms",
+      image: "/images/vege7.png",
+      origin: "KPK Farms",
       inStock: true,
-      description: "Fresh, white cauliflower heads perfect for cooking and processing.",
+      description:
+        "Fresh, white cauliflower heads perfect for cooking and processing.",
       nutritionalInfo: "Rich in Vitamin C, K, and Fiber",
       harvestDate: "2024-03-11",
       shelfLife: "7-10 days",
       farmer: "Highland Produce",
       certifications: ["Natural", "Premium"],
       rating: 4.4,
-      reviews: 93
+      reviews: 93,
     },
     {
       id: 15,
@@ -310,8 +239,8 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 1500,
-              image: "/images/vege1.png",
-        origin: "Sindh Farms",
+      image: "/images/vege1.png",
+      origin: "Sindh Farms",
       inStock: true,
       description: "Crisp, fresh cucumbers perfect for salads and cooking.",
       nutritionalInfo: "High in Water Content and Vitamin K",
@@ -320,7 +249,7 @@ const ProductsPage = () => {
       farmer: "Fresh Valley Co-op",
       certifications: ["Fresh", "Natural"],
       rating: 4.2,
-      reviews: 67
+      reviews: 67,
     },
     {
       id: 16,
@@ -330,27 +259,25 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 1000,
-              image: "/images/vege2.png",
-        origin: "Balochistan",
+      image: "/images/vege2.png",
+      origin: "Balochistan",
       inStock: true,
-      description: "Colorful, fresh bell peppers with sweet flavor and crisp texture.",
+      description:
+        "Colorful, fresh bell peppers with sweet flavor and crisp texture.",
       nutritionalInfo: "Rich in Vitamin C and Antioxidants",
       harvestDate: "2024-03-12",
       shelfLife: "7-14 days",
       farmer: "Color Garden Farms",
       certifications: ["Premium", "Pesticide-Free"],
       rating: 4.6,
-      reviews: 104
-    }
+      reviews: 104,
+    },
   ];
 
-  const filteredProducts = products.filter(product => {
-    const categoryMatch = selectedCategory === "all" || product.category === selectedCategory;
-    const priceMatch = priceRange === "all" || 
-      (priceRange === "low" && product.price <= 50) ||
-      (priceRange === "medium" && product.price > 50 && product.price <= 100) ||
-      (priceRange === "high" && product.price > 100);
-    return categoryMatch && priceMatch;
+  const filteredProducts = products.filter((product) => {
+    const categoryMatch =
+      selectedCategory === "all" || product.category === selectedCategory;
+    return categoryMatch;
   });
 
   const containerVariants = {
@@ -359,9 +286,9 @@ const ProductsPage = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -371,17 +298,15 @@ const ProductsPage = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const getCategoryColor = (category) => {
     const colors = {
       vegetables: "bg-green-100 text-green-700 border-green-200",
-      fruits: "bg-red-100 text-red-700 border-red-200",
       grains: "bg-amber-100 text-amber-700 border-amber-200",
-      herbs: "bg-green-100 text-green-700 border-green-200"
     };
     return colors[category] || "bg-gray-100 text-gray-700 border-gray-200";
   };
@@ -389,7 +314,7 @@ const ProductsPage = () => {
   return (
     <>
       <NavBar />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-green-50">
         {/* Hero Section */}
         <section className="pt-24 pb-16 relative overflow-hidden">
@@ -407,15 +332,18 @@ const ProductsPage = () => {
             >
               <div className="inline-flex items-center bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-green-200 mb-6">
                 <span className="text-2xl mr-3">🥬</span>
-                <span className="text-sm font-semibold text-green-700">Farm Fresh Products</span>
+                <span className="text-sm font-semibold text-green-700">
+                  Farm Fresh Products
+                </span>
               </div>
-              
+
               <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
                 Fresh from Farm
               </h1>
-              
+
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed">
-                Premium quality agricultural products directly from verified farmers to your business
+                Premium quality agricultural products directly from verified
+                farmers to your business
               </p>
             </motion.div>
           </div>
@@ -431,10 +359,10 @@ const ProductsPage = () => {
               className="grid md:grid-cols-4 gap-8 text-center"
             >
               {[
-                { number: "16+", label: "Fresh Products", icon: "🥕" },
+                { number: "12+", label: "Fresh Products", icon: "🥕" },
                 { number: "100kg", label: "Minimum Order", icon: "📦" },
                 { number: "24h", label: "Fresh Guarantee", icon: "⏰" },
-                { number: "100%", label: "Quality Assured", icon: "✅" }
+                { number: "100%", label: "Quality Assured", icon: "✅" },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -445,7 +373,9 @@ const ProductsPage = () => {
                   className="p-6"
                 >
                   <div className="text-4xl mb-3">{stat.icon}</div>
-                  <div className="text-3xl font-bold text-green-600 mb-2">{stat.number}</div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">
+                    {stat.number}
+                  </div>
                   <div className="text-gray-600">{stat.label}</div>
                 </motion.div>
               ))}
@@ -456,7 +386,7 @@ const ProductsPage = () => {
         {/* Filters */}
         <section className="py-8 bg-white/70">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+            <div className="flex justify-center">
               {/* Category Filter */}
               <div className="flex flex-wrap gap-3">
                 {categories.map((category) => (
@@ -473,20 +403,6 @@ const ProductsPage = () => {
                     {category.label}
                   </button>
                 ))}
-              </div>
-
-              {/* Price Filter */}
-              <div className="flex gap-3">
-                <select
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
-                >
-                  <option value="all">All Prices</option>
-                  <option value="low">Under ₨50/kg</option>
-                  <option value="medium">₨50-100/kg</option>
-                  <option value="high">Above ₨100/kg</option>
-                </select>
               </div>
             </div>
           </div>
@@ -516,53 +432,74 @@ const ProductsPage = () => {
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(product.category)}`}>
-                        {categories.find(cat => cat.id === product.category)?.icon}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(
+                          product.category
+                        )}`}
+                      >
+                        {
+                          categories.find((cat) => cat.id === product.category)
+                            ?.icon
+                        }
                       </span>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        product.inStock 
-                          ? 'bg-green-100 text-green-700 border border-green-200' 
-                          : 'bg-red-100 text-red-700 border border-red-200'
-                      }`}>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          product.inStock
+                            ? "bg-green-100 text-green-700 border border-green-200"
+                            : "bg-red-100 text-red-700 border border-red-200"
+                        }`}
+                      >
+                        {product.inStock ? "In Stock" : "Out of Stock"}
                       </span>
                     </div>
-
                   </div>
-                  
+
                   <div className="p-6">
                     <div className="flex items-center gap-1 mb-2">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-sm ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                        <span
+                          key={i}
+                          className={`text-sm ${
+                            i < Math.floor(product.rating)
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        >
                           ⭐
                         </span>
                       ))}
-                      <span className="text-xs text-gray-500 ml-1">({product.reviews})</span>
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({product.reviews})
+                      </span>
                     </div>
-                    
+
                     <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
                       {product.name}
                     </h3>
-                    
+
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                       {product.description}
                     </p>
-                    
+
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-2xl font-bold text-green-600">₨{product.price}</span>
-                        <span className="text-sm text-gray-500">{product.unit}</span>
+                        <span className="text-2xl font-bold text-green-600">
+                          TK{product.price}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {product.unit}
+                        </span>
                       </div>
-                      
+
                       <div className="text-xs text-gray-600">
                         <div>Min Order: {product.minOrder}kg</div>
                         <div>Origin: {product.origin}</div>
                         <div>Farmer: {product.farmer}</div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-1 mb-4">
                       {product.certifications.map((cert, index) => (
                         <span
@@ -573,16 +510,16 @@ const ProductsPage = () => {
                         </span>
                       ))}
                     </div>
-                    
+
                     <button
                       disabled={!product.inStock}
                       className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                         product.inStock
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     >
-                      {product.inStock ? 'Add to Quote' : 'Out of Stock'}
+                      {product.inStock ? "Add to Quote" : "Out of Stock"}
                     </button>
                   </div>
                 </motion.div>
@@ -604,9 +541,10 @@ const ProductsPage = () => {
                 Need Bulk Quantities?
               </h2>
               <p className="text-green-100 text-lg mb-8">
-                Get special pricing for large orders. Contact our sales team for custom quotes and wholesale pricing.
+                Get special pricing for large orders. Contact our sales team for
+                custom quotes and wholesale pricing.
               </p>
-              
+
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                   <div className="text-4xl mb-4">📞</div>
@@ -620,11 +558,13 @@ const ProductsPage = () => {
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                   <div className="text-4xl mb-4">💬</div>
-                  <h3 className="text-xl font-bold text-white mb-2">WhatsApp</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    WhatsApp
+                  </h3>
                   <p className="text-green-100">+92-xxx-xxx-xxxx</p>
                 </div>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button className="px-8 py-4 bg-white text-green-600 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105">
                   Request Bulk Quote
@@ -637,8 +577,6 @@ const ProductsPage = () => {
           </div>
         </section>
       </div>
-      
-      <Footer />
     </>
   );
 };
