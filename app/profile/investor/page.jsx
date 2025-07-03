@@ -2,6 +2,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "../../components/NavBar";
+import {
+  FaGem,
+  FaDollarSign,
+  FaSeedling,
+  FaChartLine,
+  FaCheckCircle,
+  FaTrophy,
+  FaRocket,
+  FaChartBar,
+  FaBell,
+} from "react-icons/fa";
 
 export default function InvestorProfile() {
   const router = useRouter();
@@ -73,7 +84,9 @@ export default function InvestorProfile() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-3xl">💎</span>
+                <span className="text-3xl">
+                  <FaGem />
+                </span>
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">
@@ -115,7 +128,9 @@ export default function InvestorProfile() {
                     <p className="text-2xl font-bold">৳1,25,000</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">💰</span>
+                    <span className="text-2xl">
+                      <FaDollarSign />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -127,7 +142,9 @@ export default function InvestorProfile() {
                     <p className="text-2xl font-bold">8</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">🌱</span>
+                    <span className="text-2xl">
+                      <FaSeedling />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -139,7 +156,9 @@ export default function InvestorProfile() {
                     <p className="text-2xl font-bold">18.5%</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">📈</span>
+                    <span className="text-2xl">
+                      <FaChartLine />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -183,7 +202,7 @@ export default function InvestorProfile() {
                     </dt>
                     <dd className="text-base text-gray-900">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        💎 Investor
+                        <FaGem /> Investor
                       </span>
                     </dd>
                   </div>
@@ -194,7 +213,7 @@ export default function InvestorProfile() {
                     </dt>
                     <dd className="text-base text-gray-900">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
-                        ✅ Verified & Approved
+                        <FaCheckCircle /> Verified & Approved
                       </span>
                     </dd>
                   </div>
@@ -205,7 +224,7 @@ export default function InvestorProfile() {
                     </dt>
                     <dd className="text-base text-gray-900">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                        🏆 Premium
+                        <FaTrophy /> Premium
                       </span>
                     </dd>
                   </div>
@@ -220,7 +239,9 @@ export default function InvestorProfile() {
           <div className="px-6 py-8 sm:p-10">
             <div className="text-center py-16">
               <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 mb-6">
-                <span className="text-4xl">🚀</span>
+                <span className="text-4xl">
+                  <FaRocket />
+                </span>
               </div>
 
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -235,23 +256,25 @@ export default function InvestorProfile() {
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  💰 Portfolio Tracking
+                  <FaDollarSign /> Portfolio Tracking
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                  🌱 Project Discovery
+                  <FaSeedling /> Project Discovery
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                  📊 Advanced Analytics
+                  <FaChartBar /> Advanced Analytics
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                  💎 Premium Opportunities
+                  <FaGem /> Premium Opportunities
                 </span>
               </div>
 
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
                 <p className="text-sm text-gray-700">
-                  <strong>🔔 Get notified:</strong> We'll email you when these
-                  investment tools are ready!
+                  <strong>
+                    <FaBell /> Get notified:
+                  </strong>{" "}
+                  We'll email you when these investment tools are ready!
                 </p>
               </div>
             </div>

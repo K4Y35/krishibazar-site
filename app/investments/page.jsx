@@ -2,6 +2,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavBar from '../components/NavBar';
+import {
+  FaSeedling,
+  FaTractor,
+  FaHandshake,
+  FaCheckCircle,
+  FaStar,
+  FaSearch,
+  FaBan,
+} from "react-icons/fa";
+import { GiCow, GiGoat, GiChicken } from "react-icons/gi";
 
 export default function InvestmentsPage() {
   const [projects, setProjects] = useState([]);
@@ -115,15 +125,15 @@ export default function InvestmentsPage() {
   const getProjectIcon = (type) => {
     switch (type) {
       case "cow":
-        return "🐄";
+        return <GiCow />;
       case "goat":
-        return "🐐";
+        return <GiGoat />;
       case "chicken":
-        return "🐔";
+        return <GiChicken />;
       case "crop":
-        return "🌾";
+        return <FaSeedling />;
       default:
-        return "🚜";
+        return <FaTractor />;
     }
   };
 
@@ -171,7 +181,7 @@ export default function InvestmentsPage() {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            🐄 Cow Farming
+            <GiCow /> Cow Farming
           </button>
           <button
             onClick={() => setFilter("goat")}
@@ -181,7 +191,7 @@ export default function InvestmentsPage() {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            🐐 Goat Farming
+            <GiGoat /> Goat Farming
           </button>
           <button
             onClick={() => setFilter("chicken")}
@@ -191,7 +201,7 @@ export default function InvestmentsPage() {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            🐔 Chicken Farming
+            <GiChicken /> Chicken Farming
           </button>
           <button
             onClick={() => setFilter("crop")}
@@ -201,7 +211,7 @@ export default function InvestmentsPage() {
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
-            🌾 Crop Farming
+            <FaSeedling /> Crop Farming
           </button>
         </div>
 
@@ -212,15 +222,21 @@ export default function InvestmentsPage() {
           </h3>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center space-x-2">
-              <span className="text-blue-600">🚫</span>
+              <span className="text-blue-600">
+                <FaBan />
+              </span>
               <span>No Interest (Riba)</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-blue-600">🤝</span>
+              <span className="text-blue-600">
+                <FaHandshake />
+              </span>
               <span>Profit & Loss Sharing</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-blue-600">✅</span>
+              <span className="text-blue-600">
+                <FaCheckCircle />
+              </span>
               <span>Real Economic Activity</span>
             </div>
           </div>
@@ -230,7 +246,9 @@ export default function InvestmentsPage() {
         {!loading && allProjects.some((p) => p.status === "featured") && (
           <div className="mb-6">
             <div className="inline-flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium border">
-              <span>⭐</span>
+              <span>
+                <FaStar />
+              </span>
               <span>Featured Investment Opportunities</span>
             </div>
           </div>
@@ -246,7 +264,9 @@ export default function InvestmentsPage() {
           </div>
         ) : allProjects.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
+            <div className="text-6xl mb-4">
+              <FaSearch />
+            </div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
               No Projects Found
             </h3>
@@ -268,7 +288,7 @@ export default function InvestmentsPage() {
               >
                 {project.status === "featured" && (
                   <div className="bg-gray-100 text-gray-700 text-center py-1 text-xs font-medium border-b">
-                    ⭐ Featured Project
+                    <FaStar /> Featured Project
                   </div>
                 )}
                 <div className="p-6">

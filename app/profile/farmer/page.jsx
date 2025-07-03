@@ -2,6 +2,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "../../components/NavBar";
+import {
+  FaSeedling,
+  FaDollarSign,
+  FaChartBar,
+  FaTractor,
+  FaCheckCircle,
+  FaShoppingCart,
+  FaBell,
+  FaRocket,
+} from "react-icons/fa";
 
 export default function FarmerProfile() {
   const router = useRouter();
@@ -73,7 +83,9 @@ export default function FarmerProfile() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-3xl">🌾</span>
+                <span className="text-3xl">
+                  <FaSeedling />
+                </span>
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">
@@ -115,7 +127,9 @@ export default function FarmerProfile() {
                     <p className="text-2xl font-bold">3</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">🌱</span>
+                    <span className="text-2xl">
+                      <FaSeedling />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -127,7 +141,9 @@ export default function FarmerProfile() {
                     <p className="text-2xl font-bold">৳45,000</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">💰</span>
+                    <span className="text-2xl">
+                      <FaDollarSign />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -139,7 +155,9 @@ export default function FarmerProfile() {
                     <p className="text-2xl font-bold">92%</p>
                   </div>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <span className="text-2xl">📊</span>
+                    <span className="text-2xl">
+                      <FaChartBar />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -183,7 +201,7 @@ export default function FarmerProfile() {
                     </dt>
                     <dd className="text-base text-gray-900">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        🚜 Farmer
+                        <FaTractor /> Farmer
                       </span>
                     </dd>
                   </div>
@@ -194,7 +212,7 @@ export default function FarmerProfile() {
                     </dt>
                     <dd className="text-base text-gray-900">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
-                        ✅ Verified & Approved
+                        <FaCheckCircle /> Verified & Approved
                       </span>
                     </dd>
                   </div>
@@ -216,7 +234,9 @@ export default function FarmerProfile() {
           <div className="px-6 py-8 sm:p-10">
             <div className="text-center py-16">
               <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gradient-to-r from-green-100 to-blue-100 mb-6">
-                <span className="text-4xl">🚀</span>
+                <span className="text-4xl">
+                  <FaRocket />
+                </span>
               </div>
 
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -231,23 +251,25 @@ export default function FarmerProfile() {
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                  🌱 Crop Management
+                  <FaSeedling /> Crop Management
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  💰 Investment Requests
+                  <FaDollarSign /> Investment Requests
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                  📊 Analytics Dashboard
+                  <FaChartBar /> Analytics Dashboard
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                  🛒 Marketplace
+                  <FaShoppingCart /> Marketplace
                 </span>
               </div>
 
               <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
                 <p className="text-sm text-gray-700">
-                  <strong>🔔 Get notified:</strong> We'll email you when these
-                  features are ready!
+                  <strong>
+                    <FaBell /> Get notified:
+                  </strong>{" "}
+                  We'll email you when these features are ready!
                 </p>
               </div>
             </div>

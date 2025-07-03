@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import NavBar from "../../components/NavBar";
 import Footer from "../../components/Footer";
+import { FaStar, FaUserFriends } from "react-icons/fa";
 
 const ProductDetail = () => {
   const params = useParams();
@@ -25,7 +26,8 @@ const ProductDetail = () => {
 
     origin: "Punjab Farms",
     inStock: true,
-    description: "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption. These tomatoes are carefully selected from the best farms in Punjab and are known for their rich flavor, vibrant color, and nutritional value.",
+    description:
+      "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption. These tomatoes are carefully selected from the best farms in Punjab and are known for their rich flavor, vibrant color, and nutritional value.",
     nutritionalInfo: "Rich in Vitamin C, Lycopene, and Potassium",
     harvestDate: "2024-03-10",
     shelfLife: "7-10 days",
@@ -35,20 +37,20 @@ const ProductDetail = () => {
     reviews: 127,
     images: ["/images/vege1.png", "/images/vege2.png", "/images/vege3.png"],
     specifications: {
-      "Variety": "Roma Tomatoes",
-      "Size": "Medium to Large",
-      "Color": "Deep Red",
-      "Moisture": "92-94%",
+      Variety: "Roma Tomatoes",
+      Size: "Medium to Large",
+      Color: "Deep Red",
+      Moisture: "92-94%",
       "pH Level": "4.2-4.9",
-      "Storage": "Cool, dry place"
+      Storage: "Cool, dry place",
     },
     farmerDetails: {
       name: "Hassan Ali",
       experience: "15 years",
       farmSize: "50 acres",
       location: "District Sahiwal, Punjab",
-      contact: "+92-xxx-xxx-xxxx"
-    }
+      contact: "+92-xxx-xxx-xxxx",
+    },
   };
 
   const relatedProducts = [
@@ -57,22 +59,22 @@ const ProductDetail = () => {
       name: "Red Onions",
       price: 35,
       image: "/images/vege2.png",
-      minOrder: 100
+      minOrder: 100,
     },
     {
       id: 3,
       name: "Potato Premium",
       price: 30,
       image: "/images/vege3.png",
-      minOrder: 200
+      minOrder: 200,
     },
     {
       id: 4,
       name: "Fresh Garlic",
       price: 180,
       image: "/images/vege4.png",
-      minOrder: 50
-    }
+      minOrder: 50,
+    },
   ];
 
   const handleQuantityChange = (e) => {
@@ -85,7 +87,7 @@ const ProductDetail = () => {
   return (
     <>
       <NavBar />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-green-50">
         {/* Product Detail Section */}
         <section className="pt-24 pb-16">
@@ -98,7 +100,10 @@ const ProductDetail = () => {
             >
               {/* Breadcrumb */}
               <div className="mb-8">
-                <Link href="/products" className="text-green-600 hover:text-green-700 font-medium">
+                <Link
+                  href="/products"
+                  className="text-green-600 hover:text-green-700 font-medium"
+                >
                   ← Back to Products
                 </Link>
               </div>
@@ -121,10 +126,13 @@ const ProductDetail = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-4">
                     {product.images.map((img, index) => (
-                      <div key={index} className="relative h-24 rounded-lg overflow-hidden bg-white shadow-md cursor-pointer hover:shadow-lg transition-shadow">
+                      <div
+                        key={index}
+                        className="relative h-24 rounded-lg overflow-hidden bg-white shadow-md cursor-pointer hover:shadow-lg transition-shadow"
+                      >
                         <Image
                           src={img}
                           alt={`${product.name} ${index + 1}`}
@@ -143,20 +151,30 @@ const ProductDetail = () => {
                       <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
                         🥬 {product.category}
                       </span>
-                      
                     </div>
-                    
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">{product.name}</h1>
-                    
+
+                    <h1 className="text-4xl font-bold text-gray-800 mb-4">
+                      {product.name}
+                    </h1>
+
                     <div className="flex items-center gap-2 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-lg ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                          ⭐
+                        <span
+                          key={i}
+                          className={`text-lg ${
+                            i < Math.floor(product.rating)
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        >
+                          <FaStar />
                         </span>
                       ))}
-                      <span className="text-gray-600 ml-2">({product.reviews} reviews)</span>
+                      <span className="text-gray-600 ml-2">
+                        ({product.reviews} reviews)
+                      </span>
                     </div>
-                    
+
                     <p className="text-gray-600 leading-relaxed mb-6">
                       {product.description}
                     </p>
@@ -165,18 +183,24 @@ const ProductDetail = () => {
                   {/* Pricing */}
                   <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-3xl font-bold text-green-600">₨{product.price}</span>
+                      <span className="text-3xl font-bold text-green-600">
+                        ₨{product.price}
+                      </span>
                       <span className="text-gray-500">{product.unit}</span>
                     </div>
-                    
+
                     <div className="space-y-3 text-sm text-gray-600 mb-6">
                       <div className="flex justify-between">
                         <span>Minimum Order:</span>
-                        <span className="font-semibold">{product.minOrder}kg</span>
+                        <span className="font-semibold">
+                          {product.minOrder}kg
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Maximum Order:</span>
-                        <span className="font-semibold">{product.maxOrder}kg</span>
+                        <span className="font-semibold">
+                          {product.maxOrder}kg
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Origin:</span>
@@ -184,7 +208,9 @@ const ProductDetail = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>Harvest Date:</span>
-                        <span className="font-semibold">{product.harvestDate}</span>
+                        <span className="font-semibold">
+                          {product.harvestDate}
+                        </span>
                       </div>
                     </div>
 
@@ -209,8 +235,12 @@ const ProductDetail = () => {
                     {/* Total Price */}
                     <div className="bg-green-50 p-4 rounded-lg mb-6">
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-semibold text-gray-800">Total Price:</span>
-                        <span className="text-2xl font-bold text-green-600">₨{totalPrice.toLocaleString()}</span>
+                        <span className="text-lg font-semibold text-gray-800">
+                          Total Price:
+                        </span>
+                        <span className="text-2xl font-bold text-green-600">
+                          ₨{totalPrice.toLocaleString()}
+                        </span>
                       </div>
                     </div>
 
@@ -220,13 +250,15 @@ const ProductDetail = () => {
                         disabled={!product.inStock}
                         className={`w-full py-4 rounded-lg font-bold text-lg transition-colors ${
                           product.inStock
-                            ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? "bg-green-600 text-white hover:bg-green-700"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                       >
-                        {product.inStock ? 'Add to Quote Request' : 'Out of Stock'}
+                        {product.inStock
+                          ? "Add to Quote Request"
+                          : "Out of Stock"}
                       </button>
-                      
+
                       <button className="w-full py-4 border-2 border-green-600 text-green-600 rounded-lg font-bold text-lg hover:bg-green-50 transition-colors">
                         Contact Farmer
                       </button>
@@ -252,22 +284,35 @@ const ProductDetail = () => {
                 <div className="grid md:grid-cols-3 gap-8 p-8">
                   {/* Specifications */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">Product Specifications</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                      Product Specifications
+                    </h3>
                     <div className="space-y-3">
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                          <span className="text-gray-600">{key}:</span>
-                          <span className="font-semibold text-gray-800">{value}</span>
-                        </div>
-                      ))}
+                      {Object.entries(product.specifications).map(
+                        ([key, value]) => (
+                          <div
+                            key={key}
+                            className="flex justify-between py-2 border-b border-gray-100"
+                          >
+                            <span className="text-gray-600">{key}:</span>
+                            <span className="font-semibold text-gray-800">
+                              {value}
+                            </span>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
 
                   {/* Nutritional Info */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">Nutritional Information</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                      Nutritional Information
+                    </h3>
                     <div className="bg-green-50 p-4 rounded-lg">
-                      <p className="text-green-700 leading-relaxed">{product.nutritionalInfo}</p>
+                      <p className="text-green-700 leading-relaxed">
+                        {product.nutritionalInfo}
+                      </p>
                       <div className="mt-3 text-sm text-green-600">
                         <p>• Natural source of essential vitamins</p>
                         <p>• High antioxidant content</p>
@@ -278,21 +323,39 @@ const ProductDetail = () => {
 
                   {/* Farmer Details */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">About the Farmer</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                      About the Farmer
+                    </h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-2xl">👨‍🌾</span>
+                          <span className="text-2xl">
+                            <FaUserFriends />
+                          </span>
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-800">{product.farmerDetails.name}</p>
-                          <p className="text-sm text-gray-600">{product.farmerDetails.experience} farming experience</p>
+                          <p className="font-semibold text-gray-800">
+                            {product.farmerDetails.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {product.farmerDetails.experience} farming
+                            experience
+                          </p>
                         </div>
                       </div>
                       <div className="space-y-2 text-sm">
-                        <p><span className="font-semibold">Farm Size:</span> {product.farmerDetails.farmSize}</p>
-                        <p><span className="font-semibold">Location:</span> {product.farmerDetails.location}</p>
-                        <p><span className="font-semibold">Contact:</span> {product.farmerDetails.contact}</p>
+                        <p>
+                          <span className="font-semibold">Farm Size:</span>{" "}
+                          {product.farmerDetails.farmSize}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Location:</span>{" "}
+                          {product.farmerDetails.location}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Contact:</span>{" "}
+                          {product.farmerDetails.contact}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -301,7 +364,9 @@ const ProductDetail = () => {
 
               {/* Related Products */}
               <div className="mt-16">
-                <h2 className="text-3xl font-bold text-gray-800 mb-8">Related Products</h2>
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">
+                  Related Products
+                </h2>
                 <div className="grid md:grid-cols-3 gap-6">
                   {relatedProducts.map((relatedProduct) => (
                     <Link
@@ -322,8 +387,12 @@ const ProductDetail = () => {
                           {relatedProduct.name}
                         </h3>
                         <div className="flex justify-between items-center">
-                          <span className="text-xl font-bold text-green-600">₨{relatedProduct.price}</span>
-                          <span className="text-sm text-gray-500">Min: {relatedProduct.minOrder}kg</span>
+                          <span className="text-xl font-bold text-green-600">
+                            ₨{relatedProduct.price}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Min: {relatedProduct.minOrder}kg
+                          </span>
                         </div>
                       </div>
                     </Link>
@@ -334,7 +403,7 @@ const ProductDetail = () => {
           </div>
         </section>
       </div>
-      
+
       <Footer />
     </>
   );

@@ -11,6 +11,14 @@ import {
   FaChartLine,
   FaShoppingCart,
   FaMosque,
+  FaWhatsapp,
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaChartBar,
+  FaTimes,
+  FaHandshake,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { GiCow, GiFarmer } from "react-icons/gi";
 
@@ -53,7 +61,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/60 -z-10" />
 
         <NavBar />
-    
+
         <HeroContent />
       </div>
 
@@ -77,11 +85,9 @@ const Home = () => {
             className="absolute bottom-20 left-10 opacity-25 -rotate-12 animate-pulse"
             style={{ animationDelay: "1.5s", animationDuration: "3s" }}
           />
-          
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <motion.div
               className="flex-1 lg:w-1/2"
@@ -496,7 +502,9 @@ const Home = () => {
               href="/investments"
               className="group inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-blue-500/30 hover:scale-105 border border-blue-500/20"
             >
-              <span className="mr-2">📊</span>
+              <span className="mr-2">
+                <FaChartBar />
+              </span>
               View All Opportunities
               <svg
                 className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
@@ -566,7 +574,9 @@ const Home = () => {
               className="space-y-6"
             >
               <div className="flex items-start space-x-4">
-                <div className="text-2xl">❌</div>
+                <div className="text-2xl">
+                  <FaTimes />
+                </div>
                 <div>
                   <h3 className="text-xl font-semibold text-red-600">
                     No Riba (Interest)
@@ -579,7 +589,9 @@ const Home = () => {
               </div>
 
               <div className="flex items-start space-x-4">
-                <div className="text-2xl">🤝</div>
+                <div className="text-2xl">
+                  <FaHandshake />
+                </div>
                 <div>
                   <h3 className="text-xl font-semibold text-green-600">
                     Profit & Loss Sharing
@@ -592,7 +604,9 @@ const Home = () => {
               </div>
 
               <div className="flex items-start space-x-4">
-                <div className="text-2xl">✅</div>
+                <div className="text-2xl">
+                  <FaCheckCircle />
+                </div>
                 <div>
                   <h3 className="text-xl font-semibold text-blue-600">
                     Real Economic Activity

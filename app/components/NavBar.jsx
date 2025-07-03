@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { FaSeedling, FaGem } from "react-icons/fa";
 
 const NavBar = () => {
   const pathname = usePathname();
@@ -133,7 +134,7 @@ const NavBar = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 border border-green-400 rounded-lg hover:bg-green-600/30 transition-colors"
               >
                 <span className="text-lg">
-                  {user.usertype === 1 ? "🌾" : "💎"}
+                  {user.usertype === 1 ? <FaSeedling /> : <FaGem />}
                 </span>
                 <span className="text-green-300 font-medium">
                   {user.first_name} {user.last_name}

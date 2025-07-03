@@ -67,19 +67,6 @@ const buttonItem = {
   },
 };
 
-// Icon mapping function
-const getIcon = (iconName) => {
-  const iconMap = {
-    "🌱": <FaSeedling />,
-    "💰": <FaDollarSign />,
-    "📈": <FaChartLine />,
-    "📚": <FaStore />,
-    "🚜": <FaTractor />,
-    "🛒": <FaShoppingCart />,
-  };
-  return iconMap[iconName] || iconName;
-};
-
 const HeroTexts = [
   {
     title: "Empowering Farmers. Connecting Investors. Growing Futures.",
@@ -88,13 +75,13 @@ const HeroTexts = [
     buttons: [
       {
         text: "Join as Farmer",
-        icon: "🌱",
+        icon: <FaSeedling />,
         href: "/auth/register?role=farmer",
         color: "green",
       },
       {
         text: "Start Investing",
-        icon: "💰",
+        icon: <FaDollarSign />,
         href: "/auth/register?role=investor",
         color: "blue",
       },
@@ -107,11 +94,11 @@ const HeroTexts = [
     buttons: [
       {
         text: "Explore Investments",
-        icon: "📈",
+        icon: <FaChartLine />,
         href: "/investments",
         color: "blue",
       },
-      { text: "Learn More", icon: "📚", href: "/about", color: "green" },
+      { text: "Learn More", icon: <FaStore />, href: "/about", color: "green" },
     ],
   },
   {
@@ -121,11 +108,16 @@ const HeroTexts = [
     buttons: [
       {
         text: "Get Farm Support",
-        icon: "🚜",
+        icon: <FaTractor />,
         href: "/auth/register?role=farmer",
         color: "green",
       },
-      { text: "Shop Supplies", icon: "🛒", href: "/shop", color: "blue" },
+      {
+        text: "Shop Supplies",
+        icon: <FaShoppingCart />,
+        href: "/shop",
+        color: "blue",
+      },
     ],
   },
 ];
@@ -190,7 +182,7 @@ const HeroContent = () => {
                           : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/30 border-blue-500/20"
                       }`}
                     >
-                      <span className="mr-2">{getIcon(button.icon)}</span>
+                      <span className="mr-2">{button.icon}</span>
                       {button.text}
                       <svg
                         className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"

@@ -314,7 +314,9 @@ const BlogPage = () => {
                             : "bg-purple-100"
                         } rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
                       >
-                        <span className="text-3xl">{category.icon}</span>
+                        <span className="text-3xl">
+                          {getIcon(category.icon)}
+                        </span>
                       </div>
                       <h3
                         className={`text-lg font-bold mb-2 ${
@@ -386,14 +388,10 @@ const BlogPage = () => {
                           post.category
                         )}`}
                       >
-                        {
+                        {getIcon(
                           categories.find((cat) => cat.id === post.category)
                             ?.icon
-                        }{" "}
-                        {
-                          categories.find((cat) => cat.id === post.category)
-                            ?.label
-                        }
+                        )}
                       </span>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -513,7 +511,7 @@ const BlogPage = () => {
                       : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                   }`}
                 >
-                  <span className="mr-2">{category.icon}</span>
+                  <span className="mr-2">{getIcon(category.icon)}</span>
                   {category.label}
                 </button>
               ))}
@@ -550,10 +548,10 @@ const BlogPage = () => {
                           post.category
                         )}`}
                       >
-                        {
+                        {getIcon(
                           categories.find((cat) => cat.id === post.category)
                             ?.icon
-                        }
+                        )}
                       </span>
                     </div>
                   </div>
@@ -616,7 +614,7 @@ const BlogPage = () => {
                   role: "Agricultural Scientist",
                   expertise: "Seasonal Farming & Crop Management",
                   articles: 4,
-                  avatar: "👨‍🌾",
+                  avatar: getIcon("👨‍🌾"),
                   bio: "15+ years in sustainable agriculture research",
                 },
                 {
@@ -624,7 +622,7 @@ const BlogPage = () => {
                   role: "Islamic Finance Scholar",
                   expertise: "Shariah-Compliant Investments",
                   articles: 2,
-                  avatar: "👨‍🏫",
+                  avatar: getIcon("👨‍🏫"),
                   bio: "Expert in Islamic banking and agricultural finance",
                 },
                 {
@@ -632,7 +630,7 @@ const BlogPage = () => {
                   role: "Plant Pathologist",
                   expertise: "Disease Control & Prevention",
                   articles: 3,
-                  avatar: "👩‍🔬",
+                  avatar: getIcon("👩‍🔬"),
                   bio: "Specialist in organic plant disease management",
                 },
               ].map((author, index) => (
@@ -689,7 +687,7 @@ const BlogPage = () => {
                   transition={{ delay: index * 0.1 }}
                   className="p-6"
                 >
-                  <div className="text-4xl mb-3">{stat.icon}</div>
+                  <div className="text-4xl mb-3">{getIcon(stat.icon)}</div>
                   <div className="text-3xl font-bold text-green-600 mb-2">
                     {stat.number}
                   </div>
@@ -735,7 +733,7 @@ const BlogPage = () => {
 
               <div className="grid md:grid-cols-3 gap-6 text-green-100">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl">✅</span>
+                  <span className="text-xl">{getIcon("✅")}</span>
                   <span>Weekly expert insights</span>
                 </div>
                 <div className="flex items-center justify-center gap-2">
@@ -743,7 +741,7 @@ const BlogPage = () => {
                   <span>No spam, ever</span>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl">🕌</span>
+                  <span className="text-xl">{getIcon("🕌")}</span>
                   <span>100% Halal content</span>
                 </div>
               </div>

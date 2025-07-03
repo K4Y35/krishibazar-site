@@ -5,14 +5,35 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import {
+  FaShoppingCart,
+  FaSeedling,
+  FaBox,
+  FaCheckCircle,
+  FaStar,
+  FaPhone,
+  FaEnvelope,
+  FaClock,
+  FaCarrot,
+} from "react-icons/fa";
 
 const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   const categories = [
-    { id: "all", label: "All Products", icon: "🛒", color: "gray" },
-    { id: "vegetables", label: "Vegetables", icon: "🥬", color: "green" },
-    { id: "grains", label: "Rice", icon: "🌾", color: "amber" },
+    {
+      id: "all",
+      label: "All Products",
+      icon: <FaShoppingCart />,
+      color: "gray",
+    },
+    {
+      id: "vegetables",
+      label: "Vegetables",
+      icon: <FaSeedling />,
+      color: "green",
+    },
+    { id: "grains", label: "Rice", icon: <FaSeedling />, color: "amber" },
   ];
 
   const products = [
@@ -24,8 +45,7 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 5000,
-      image: "/images/vege1.png",
-      origin: "Punjab Farms",
+      image: "/images/tomatoes.jpg",
       inStock: true,
       description:
         "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption.",
@@ -45,8 +65,7 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 100,
       maxOrder: 3000,
-      image: "/images/vege2.png",
-      origin: "Sindh Farms",
+      image: "/images/redOnion.jpg",
       inStock: true,
       description:
         "Fresh, pungent red onions with excellent storage life and rich flavor.",
@@ -66,9 +85,7 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 200,
       maxOrder: 10000,
-      image: "/images/vege3.png",
-
-      origin: "KPK Highlands",
+      image: "/images/potatoes.jpg",
       inStock: true,
       description:
         "High-quality potatoes, ideal for cooking, frying, and commercial use.",
@@ -89,9 +106,7 @@ const ProductsPage = () => {
       unit: "per kg",
       minOrder: 500,
       maxOrder: 50000,
-      image: "/images/vege6.png",
-
-      origin: "Punjab Rice Mills",
+      image: "/images/rice.jpeg",
       inStock: true,
       description:
         "Premium aged Basmati rice with long grains and aromatic fragrance.",
@@ -102,175 +117,6 @@ const ProductsPage = () => {
       certifications: ["Aged 2 Years", "Export Quality"],
       rating: 4.9,
       reviews: 342,
-    },
-    {
-      id: 7,
-      name: "Green Chilies",
-      category: "vegetables",
-      price: 80,
-      unit: "per kg",
-      minOrder: 50,
-      maxOrder: 1000,
-      image: "/images/vege7.png",
-      origin: "Sindh Farms",
-      inStock: true,
-      description:
-        "Fresh, spicy green chilies perfect for cooking and food processing.",
-      nutritionalInfo: "High in Vitamin C and Capsaicin",
-      harvestDate: "2024-03-13",
-      shelfLife: "7-10 days",
-      farmer: "Spice King Farm",
-      certifications: ["Fresh", "Pesticide-Free"],
-      rating: 4.4,
-      reviews: 76,
-    },
-
-    {
-      id: 9,
-      name: "White Onions",
-      category: "vegetables",
-      price: 40,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 3000,
-      image: "/images/vege2.png",
-      origin: "Punjab Farms",
-      inStock: true,
-      description:
-        "Mild-flavored white onions, perfect for cooking and salads.",
-      nutritionalInfo: "Good source of Vitamin C and Antioxidants",
-      harvestDate: "2024-03-07",
-      shelfLife: "25-35 days",
-      farmer: "Crescent Farm",
-      certifications: ["Natural", "Fresh"],
-      rating: 4.3,
-      reviews: 67,
-    },
-
-    {
-      id: 11,
-      name: "Wheat Grain",
-      category: "grains",
-      price: 55,
-      unit: "per kg",
-      minOrder: 1000,
-      maxOrder: 100000,
-      image: "/images/vege4.png",
-      origin: "Punjab Wheat Belt",
-      inStock: true,
-      description:
-        "High-quality wheat grain suitable for flour production and commercial use.",
-      nutritionalInfo: "Rich in Protein, Fiber, and B Vitamins",
-      harvestDate: "2024-04-20",
-      shelfLife: "12 months",
-      farmer: "Golden Fields Cooperative",
-      certifications: ["Clean Grain", "Moisture Controlled"],
-      rating: 4.6,
-      reviews: 198,
-    },
-    {
-      id: 12,
-      name: "Fresh Carrots",
-      category: "vegetables",
-      price: 50,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 2000,
-      image: "/images/vege5.png",
-      origin: "Quetta Farms",
-      inStock: true,
-      description:
-        "Crisp, sweet carrots packed with nutrients and natural sweetness.",
-      nutritionalInfo: "High in Beta-Carotene and Vitamin A",
-      harvestDate: "2024-03-09",
-      shelfLife: "21-30 days",
-      farmer: "Valley Fresh Farms",
-      certifications: ["Organic", "Premium"],
-      rating: 4.5,
-      reviews: 112,
-    },
-    {
-      id: 13,
-      name: "Fresh Spinach",
-      category: "vegetables",
-      price: 25,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 1000,
-      image: "/images/vege6.png",
-      origin: "Punjab Farms",
-      inStock: true,
-      description:
-        "Fresh, leafy spinach rich in iron and nutrients, perfect for healthy cooking.",
-      nutritionalInfo: "High in Iron, Folate, and Vitamin K",
-      harvestDate: "2024-03-14",
-      shelfLife: "3-5 days",
-      farmer: "Green Leaf Farm",
-      certifications: ["Organic", "Fresh Picked"],
-      rating: 4.3,
-      reviews: 85,
-    },
-    {
-      id: 14,
-      name: "Fresh Cauliflower",
-      category: "vegetables",
-      price: 55,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 2000,
-      image: "/images/vege7.png",
-      origin: "KPK Farms",
-      inStock: true,
-      description:
-        "Fresh, white cauliflower heads perfect for cooking and processing.",
-      nutritionalInfo: "Rich in Vitamin C, K, and Fiber",
-      harvestDate: "2024-03-11",
-      shelfLife: "7-10 days",
-      farmer: "Highland Produce",
-      certifications: ["Natural", "Premium"],
-      rating: 4.4,
-      reviews: 93,
-    },
-    {
-      id: 15,
-      name: "Fresh Cucumbers",
-      category: "vegetables",
-      price: 35,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 1500,
-      image: "/images/vege1.png",
-      origin: "Sindh Farms",
-      inStock: true,
-      description: "Crisp, fresh cucumbers perfect for salads and cooking.",
-      nutritionalInfo: "High in Water Content and Vitamin K",
-      harvestDate: "2024-03-13",
-      shelfLife: "5-7 days",
-      farmer: "Fresh Valley Co-op",
-      certifications: ["Fresh", "Natural"],
-      rating: 4.2,
-      reviews: 67,
-    },
-    {
-      id: 16,
-      name: "Fresh Bell Peppers",
-      category: "vegetables",
-      price: 120,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 1000,
-      image: "/images/vege2.png",
-      origin: "Balochistan",
-      inStock: true,
-      description:
-        "Colorful, fresh bell peppers with sweet flavor and crisp texture.",
-      nutritionalInfo: "Rich in Vitamin C and Antioxidants",
-      harvestDate: "2024-03-12",
-      shelfLife: "7-14 days",
-      farmer: "Color Garden Farms",
-      certifications: ["Premium", "Pesticide-Free"],
-      rating: 4.6,
-      reviews: 104,
     },
   ];
 
@@ -331,7 +177,9 @@ const ProductsPage = () => {
               className="text-center max-w-4xl mx-auto"
             >
               <div className="inline-flex items-center bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-green-200 mb-6">
-                <span className="text-2xl mr-3">🥬</span>
+                <span className="text-2xl mr-3">
+                  <FaSeedling />
+                </span>
                 <span className="text-sm font-semibold text-green-700">
                   Farm Fresh Products
                 </span>
@@ -359,10 +207,14 @@ const ProductsPage = () => {
               className="grid md:grid-cols-4 gap-8 text-center"
             >
               {[
-                { number: "12+", label: "Fresh Products", icon: "🥕" },
-                { number: "100kg", label: "Minimum Order", icon: "📦" },
-                { number: "24h", label: "Fresh Guarantee", icon: "⏰" },
-                { number: "100%", label: "Quality Assured", icon: "✅" },
+                { number: "12+", label: "Fresh Products", icon: <FaCarrot /> },
+                { number: "100kg", label: "Minimum Order", icon: <FaBox /> },
+                { number: "24h", label: "Fresh Guarantee", icon: <FaClock /> },
+                {
+                  number: "100%",
+                  label: "Quality Assured",
+                  icon: <FaCheckCircle />,
+                },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -467,7 +319,7 @@ const ProductsPage = () => {
                               : "text-gray-300"
                           }`}
                         >
-                          ⭐
+                          <FaStar />
                         </span>
                       ))}
                       <span className="text-xs text-gray-500 ml-1">
@@ -495,7 +347,6 @@ const ProductsPage = () => {
 
                       <div className="text-xs text-gray-600">
                         <div>Min Order: {product.minOrder}kg</div>
-                        <div>Origin: {product.origin}</div>
                         <div>Farmer: {product.farmer}</div>
                       </div>
                     </div>
@@ -547,12 +398,16 @@ const ProductsPage = () => {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                  <div className="text-4xl mb-4">📞</div>
+                  <div className="text-4xl mb-4">
+                    <FaPhone />
+                  </div>
                   <h3 className="text-xl font-bold text-white mb-2">Call Us</h3>
                   <p className="text-green-100">+92-xxx-xxx-xxxx</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                  <div className="text-4xl mb-4">📧</div>
+                  <div className="text-4xl mb-4">
+                    <FaEnvelope />
+                  </div>
                   <h3 className="text-xl font-bold text-white mb-2">Email</h3>
                   <p className="text-green-100">sales@krishibazaar.com</p>
                 </div>
@@ -564,15 +419,6 @@ const ProductsPage = () => {
                   <p className="text-green-100">+92-xxx-xxx-xxxx</p>
                 </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-8 py-4 bg-white text-green-600 font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105">
-                  Request Bulk Quote
-                </button>
-                <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-green-600 transition-colors">
-                  Download Price List
-                </button>
-              </div>
             </motion.div>
           </div>
         </section>
@@ -581,4 +427,4 @@ const ProductsPage = () => {
   );
 };
 
-export default ProductsPage; 
+export default ProductsPage;
