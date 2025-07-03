@@ -53,7 +53,8 @@ export default function LoginPage() {
         }
       } else {
         if (data.message === "Please verify your phone number first") {
-          setOtpRequired(true);
+          toast.error("Your profile is not approved yet");
+          // setOtpRequired(true);
         } else {
           setError(data.message || "Login failed");
         }

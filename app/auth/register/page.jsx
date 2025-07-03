@@ -1,13 +1,14 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import NavBar from '../../components/NavBar';
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import NavBar from "../../components/NavBar";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const searchParams = useSearchParams();
-  const roleParam = searchParams.get('role');
-  
+  const roleParam = searchParams.get("role");
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -94,6 +95,13 @@ export default function RegisterPage() {
 
       const data = await response.json();
 
+      //response status 2001
+      if (response.status === 2001) {
+        toast.success("Registration successful!");
+      } else {
+        toast.error(data.message || "Registration failed");
+      }
+
       if (response.ok) {
         setSuccess(
           "Registration successful! Please verify your phone number with the OTP sent."
@@ -111,10 +119,10 @@ export default function RegisterPage() {
         setNidImages({ nid_front: null, nid_back: null });
         setImagePreview({ nid_front: "", nid_back: "" });
       } else {
-        setError(data.message || "Registration failed");
+        toast.error(data.message || "Registration failed");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      toast.error("Network error. Please try again.");
     }
 
     setLoading(false);
@@ -500,4 +508,4 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-} 
+}
