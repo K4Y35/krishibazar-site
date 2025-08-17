@@ -1,113 +1,20 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import NavBar from "../../components/NavBar";
+import { useLogin } from "../../hooks/useLogin";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    username: "", // can be email or phone
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [otpRequired, setOtpRequired] = useState(false);
-  const [otp, setOtp] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify(data.data.user));
-
-        // Check if user is approved
-        if (!data.data.user.is_approved) {
-          // Redirect to pending approval page
-          router.push("/profile/pending");
-        } else {
-          // Redirect based on usertype for approved users
-          if (data.data.user.usertype === 1) {
-            router.push("/profile/farmer");
-          } else if (data.data.user.usertype === 2) {
-            router.push("/profile/investor");
-          }
-        }
-      } else {
-        if (data.message === "Please verify your phone number first") {
-          toast.error("Your profile is not approved yet");
-          // setOtpRequired(true);
-        } else {
-          setError(data.message || "Login failed");
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setError("Network error. Please try again.");
-    }
-
-    setLoading(false);
-  };
-
-  const handleVerifyOTP = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/auth/verify-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            phone: formData.username,
-            otp_code: otp,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Try logging in again after OTP verification
-        handleSubmit(new Event("submit"));
-      } else {
-        setError(data.message || "OTP verification failed");
-      }
-    } catch (err) {
-      setError("Network error. Please try again.");
-    }
-
-    setLoading(false);
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const {
+    formData,
+    handleChange,
+    loading,
+    error,
+    otpRequired,
+    otp,
+    setOtp,
+    handleSubmit,
+    handleVerifyOTP,
+  } = useLogin();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -183,16 +90,16 @@ export default function LoginPage() {
                     htmlFor="username"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Email or Phone Number
+                    Phone Number
                   </label>
                   <input
-                    id="username"
-                    name="username"
-                    type="text"
+                    id="phone"
+                    name="phone"
+                    type="number"
                     required
                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
-                    placeholder="Enter your email or phone number"
-                    value={formData.username}
+                    placeholder="Enter your  phone number"
+                    value={formData.phone}
                     onChange={handleChange}
                   />
                 </div>
