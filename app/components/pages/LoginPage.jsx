@@ -1,7 +1,7 @@
-"use client";
-import Link from "next/link";
-import NavBar from "../../components/NavBar";
+import NavBar from "../NavBar";
+
 import { useLogin } from "../../hooks/useLogin";
+import Link from "next/link";
 
 export default function LoginPage() {
   const {
@@ -15,13 +15,8 @@ export default function LoginPage() {
     handleSubmit,
     handleVerifyOTP,
   } = useLogin();
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-green-600">
-        <NavBar />
-      </div>
-
       <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
@@ -31,7 +26,7 @@ export default function LoginPage() {
             <p className="mt-2 text-center text-sm text-gray-600">
               Or{" "}
               <Link
-                href="/auth/register"
+                href="/register"
                 className="font-medium text-green-600 hover:text-green-500"
               >
                 create a new account
@@ -136,7 +131,7 @@ export default function LoginPage() {
 
               <div className="text-center">
                 <Link
-                  href="/auth/forgot-password"
+                  href="/forgot-password"
                   className="text-sm text-green-600 hover:text-green-500"
                 >
                   Forgot your password?

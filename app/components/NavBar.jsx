@@ -1,15 +1,25 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FaSeedling, FaGem } from "react-icons/fa";
+import {
+  FaSeedling,
+  FaGem,
+  FaChevronDown,
+  FaUser,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { useSiteContext } from "../context/SiteContext";
 
 const NavBar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const { isAuthenticated, user, logout } = useSiteContext();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,45 +32,15 @@ const NavBar = () => {
   }, []);
 
   useEffect(() => {
-    // Check if user is logged in
-    const checkAuthStatus = () => {
-      const token = localStorage.getItem("token");
-      const userData = localStorage.getItem("user");
-
-      if (token && userData) {
-        try {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
-          setIsLoggedIn(true);
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
       }
     };
 
-    checkAuthStatus();
-
-    // Listen for storage changes (when user logs in/out in another tab)
-    const handleStorageChange = () => {
-      checkAuthStatus();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setUser(null);
-    router.push("/");
-  };
 
   const handleProfileClick = () => {
     if (user) {
@@ -74,6 +54,7 @@ const NavBar = () => {
         }
       }
     }
+    setIsDropdownOpen(false);
   };
 
   const getLinkClasses = (path) => {
@@ -126,40 +107,63 @@ const NavBar = () => {
         </div>
 
         <div className="flex space-x-4 items-center">
-          {isLoggedIn && user ? (
+          {isAuthenticated && user ? (
             <>
-              {/* User Profile Info */}
-              <button
-                onClick={handleProfileClick}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 border border-green-400 rounded-lg hover:bg-green-600/30 transition-colors"
-              >
-                <span className="text-lg">
-                  {user.usertype === 1 ? <FaSeedling /> : <FaGem />}
-                </span>
-                <span className="text-green-300 font-medium">
-                  {user.first_name} {user.last_name}
-                </span>
-              </button>
+              {/* User Profile Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 border border-green-400 rounded-lg hover:bg-green-600/30 transition-colors"
+                >
+                  <span className="text-lg">
+                    {user.usertype === 1 ? <FaSeedling /> : <FaGem />}
+                  </span>
+                  <span className="text-green-300 font-medium">
+                    {user.last_name}
+                  </span>
+                  <FaChevronDown
+                    className={`text-sm transition-transform ${
+                      isDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Logout
-              </button>
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50">
+                    <div className="py-2">
+                      <button
+                        onClick={handleProfileClick}
+                        className="w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <FaUser className="text-green-400" />
+                        <span>Profile</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <FaSignOutAlt className="text-red-400" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>
-              {/* Login and Join Us buttons for non-logged in users */}
               <Link
-                href="/auth/login"
+                href="/login"
                 className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Login
               </Link>
               <Link
-                href="/auth/register"
+                href="/register"
                 className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Join Us

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import NavBar from "../../components/NavBar";
-import userServices from "../../services/userServices";
+import NavBar from "../components/NavBar";
+import userServices from "../services/userServices";
 
 export default function VerifyOtpPage() {
   const router = useRouter();

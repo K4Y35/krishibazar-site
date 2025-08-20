@@ -1,8 +1,5 @@
-"use client";
-import Link from "next/link";
-import NavBar from "../../components/NavBar";
 import { useRegister } from "../../hooks/useRegister";
-import { getImageUrl } from "../../utils";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const {
@@ -18,13 +15,8 @@ export default function RegisterPage() {
     handleRegister,
     handleImageUpload,
   } = useRegister();
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-green-600">
-        <NavBar />
-      </div>
-
       <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>

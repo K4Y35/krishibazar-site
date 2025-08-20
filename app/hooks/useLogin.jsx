@@ -1,10 +1,20 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import userServices from "../services/userServices";
+import { useSiteContext } from "../context/SiteContext";
 
 export const useLogin = () => {
   const router = useRouter();
+  const {
+    handleLogin,
+    isUserApproved,
+    getUserType,
+    isFarmer,
+    isInvestor,
+    verifyOtp,
+  } = useSiteContext();
 
   const [formData, setFormData] = useState({ phone: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -36,24 +46,19 @@ export const useLogin = () => {
     setError("");
 
     try {
-      const response = await userServices.login({
+      const response = await handleLogin({
         phone: formData.phone,
         password: formData.password,
       });
 
-      console.log(response.data.user);
       if (response?.success) {
-        const token = response.data?.token;
-        const user = response.data?.user;
-        if (token && user) {
-          localStorage.setItem("krishibazaar-token", token);
-          localStorage.setItem("krishibazaar-user", JSON.stringify(user));
-        }
-        redirectByRole(user);
+        redirectByRole(response.user);
       } else {
         if (response?.message === "Please verify your phone number first") {
           // Prefer dedicated OTP page flow
-          router.push(`/auth/verify-otp?phone=${encodeURIComponent(formData.phone)}`);
+          router.push(
+            `/verify-otp?phone=${encodeURIComponent(formData.phone)}`
+          );
           // If you want inline OTP instead, uncomment below
           // setOtpRequired(true);
         } else {
@@ -61,7 +66,12 @@ export const useLogin = () => {
         }
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Network error. Please try again.");
+      toast.error(
+        err?.response?.data?.message || "Network error. Please try again."
+      );
+      setError(
+        err?.response?.data?.message || "Network error. Please try again."
+      );
     }
 
     setLoading(false);
@@ -73,7 +83,7 @@ export const useLogin = () => {
     setError("");
 
     try {
-      const response = await userServices.verifyOtp({
+      const response = await verifyOtp({
         phone: formData.phone,
         otp_code: otp,
       });
