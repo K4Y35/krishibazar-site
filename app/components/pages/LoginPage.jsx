@@ -47,7 +47,7 @@ export default function LoginPage() {
                   htmlFor="otp"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Enter OTP sent to your phone
+                  Enter OTP sent to your email
                 </label>
                 <input
                   id="otp"
@@ -85,16 +85,16 @@ export default function LoginPage() {
                     htmlFor="username"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Phone Number
+                    Email
                   </label>
                   <input
-                    id="phone"
-                    name="phone"
-                    type="number"
+                    id="email"
+                    name="email"
+                    type="email"
                     required
                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
-                    placeholder="Enter your  phone number"
-                    value={formData.phone}
+                    placeholder="Enter your  email"
+                    value={formData.email}
                     onChange={handleChange}
                   />
                 </div>
@@ -135,6 +135,14 @@ export default function LoginPage() {
                   className="text-sm text-green-600 hover:text-green-500"
                 >
                   Forgot your password?
+                </Link>
+              </div>
+              <div className="text-center mt-2">
+                <Link
+                  href="/verify-otp"
+                  className="text-sm text-green-600 hover:text-green-500"
+                >
+                  Didn't get OTP? Resend
                 </Link>
               </div>
             </form>

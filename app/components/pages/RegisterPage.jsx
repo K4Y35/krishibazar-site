@@ -40,43 +40,7 @@ export default function RegisterPage() {
                 {success}
               </div>
             )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                I want to join as:
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => updateUserType(1)}
-                  className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                    watchedUserType === 1
-                      ? "border-green-500 bg-green-50 text-green-700"
-                      : "border-gray-300 hover:border-green-300"
-                  }`}
-                >
-                  <div className="text-2xl mb-2">🚜</div>
-                  <div className="font-semibold">Farmer</div>
-                  <div className="text-xs text-gray-500">
-                    Get funding for projects
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateUserType(2)}
-                  className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                    watchedUserType === 2
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-300 hover:border-blue-300"
-                  }`}
-                >
-                  <div className="text-2xl mb-2">💼</div>
-                  <div className="font-semibold">Investor</div>
-                  <div className="text-xs text-gray-500">
-                    Invest in farm projects
-                  </div>
-                </button>
-              </div>
-            </div>
+
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -361,11 +325,11 @@ export default function RegisterPage() {
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                // disabled={loading}
                 onClick={handleRegister}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
               >
-                {loading ? "Creating Account..." : "Create Account"}
+                Create Account
               </button>
             </div>
 

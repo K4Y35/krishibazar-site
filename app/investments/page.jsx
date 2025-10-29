@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavBar from '../components/NavBar';
+import { useSiteContext } from "../context/SiteContext";
+import request from "../services/httpServices";
 import {
   FaSeedling,
   FaTractor,
@@ -10,6 +12,7 @@ import {
   FaStar,
   FaSearch,
   FaBan,
+  FaCheck,
 } from "react-icons/fa";
 import { GiCow, GiGoat, GiChicken } from "react-icons/gi";
 
@@ -17,88 +20,89 @@ export default function InvestmentsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
-
-  // Featured static projects from home page
-  const featuredProjects = [
-    {
-      id: "featured-1",
-      title: "Cow Fattening Project",
-      farmer_name: "Abdul Rahman",
-      farmer_location: "Rangpur, Bangladesh",
-      project_type: "cow",
-      description:
-        "Traditional cow fattening project with 100% organic feed and modern veterinary care. Expected to produce premium quality beef for local and regional markets.",
-      total_fund_needed: 50000,
-      current_funded: 35000,
-      duration_months: 8,
-      expected_return_percent: 17.5,
-      risk_level: "medium",
-      status: "featured",
-    },
-    {
-      id: "featured-2",
-      title: "Goat Farming Initiative",
-      farmer_name: "Fatima Begum",
-      farmer_location: "Sylhet, Bangladesh",
-      project_type: "goat",
-      description:
-        "Sustainable goat rearing project focusing on Black Bengal breed. Includes breeding program and milk production for local dairy cooperative.",
-      total_fund_needed: 30000,
-      current_funded: 22000,
-      duration_months: 6,
-      expected_return_percent: 21.5,
-      risk_level: "low",
-      status: "featured",
-    },
-    {
-      id: "featured-3",
-      title: "Chicken Farming Operation",
-      farmer_name: "Mohammad Hasan",
-      farmer_location: "Comilla, Bangladesh",
-      project_type: "chicken",
-      description:
-        "Modern broiler chicken farming with climate-controlled environment and automated feeding systems. Targeting both local and wholesale markets.",
-      total_fund_needed: 25000,
-      current_funded: 18000,
-      duration_months: 4,
-      expected_return_percent: 25,
-      risk_level: "medium",
-      status: "featured",
-    },
-  ];
+  const [userInvestments, setUserInvestments] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const { isAuthenticated, user } = useSiteContext();
 
   useEffect(() => {
-    fetchProjects();
-  }, [filter]);
+    fetchCategories();
+    if (isAuthenticated) {
+      fetchUserInvestments();
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (categories.length > 0 || selectedCategory === "all") {
+      fetchProjects();
+    }
+  }, [selectedCategory, categories]);
+
+  const fetchUserInvestments = async () => {
+    try {
+      const response = await request.get(
+        "/proxy?path=" + encodeURIComponent("/user/investments")
+      );
+      if (response.success) {
+        setUserInvestments(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching user investments:", error);
+    }
+  };
+
+  const hasUserInvested = (projectId) => {
+    return userInvestments.some((inv) => inv.project_id === projectId);
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/categories?is_active=true"
+      );
+      const data = await response.json();
+      if (data.success) {
+        setCategories(data.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const fetchProjects = async () => {
     try {
-      let url = "http://localhost:5090/api/projects?status=approved&limit=20";
-      if (filter !== "all") {
-        url += `&type=${filter}`;
+      setLoading(true);
+      let url = "http://localhost:4000/api/projects?status=approved&limit=20";
+
+      // If a category is selected (not "all"), find the category ID
+      if (selectedCategory !== "all" && categories.length > 0) {
+        const category = categories.find(
+          (cat) => cat.name === selectedCategory
+        );
+        if (category) {
+          url += `&category_id=${category.id}`;
+        }
       }
+
+      console.log("Fetching projects from:", url);
 
       const response = await fetch(url);
       const data = await response.json();
-      setProjects(data);
+
+      console.log("Projects response:", data);
+
+      if (data.success) {
+        setProjects(data.data || []);
+      } else {
+        console.error("Error fetching projects:", data.message);
+        setProjects([]);
+      }
     } catch (error) {
       console.error("Error fetching projects:", error);
-      // If API fails, we'll still show featured projects
+      setProjects([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  const getFilteredProjects = () => {
-    let filtered = featuredProjects;
-
-    if (filter !== "all") {
-      filtered = featuredProjects.filter(
-        (project) => project.project_type === filter
-      );
-    }
-
-    // Combine featured projects with API projects
-    return [...filtered, ...projects];
   };
 
   const calculateProgress = (project) => {
@@ -122,6 +126,36 @@ export default function InvestmentsPage() {
     }
   };
 
+  const getCategoryIcon = (category) => {
+    if (!category) return <FaSeedling />;
+
+    // If icon is a file (has extension), show image
+    if (category.icon && category.icon.includes(".")) {
+      return (
+        <img
+          src={`http://localhost:4000/public/${category.icon}`}
+          alt={category.name}
+          className="w-6 h-6"
+        />
+      );
+    }
+
+    // Otherwise, show default icons based on icon field
+    switch (category.icon) {
+      case "cow":
+        return <GiCow />;
+      case "goat":
+        return <GiGoat />;
+      case "chicken":
+        return <GiChicken />;
+      case "fish":
+        return <FaFish />;
+      case "crop":
+      default:
+        return <FaSeedling />;
+    }
+  };
+
   const getProjectIcon = (type) => {
     switch (type) {
       case "cow":
@@ -137,7 +171,7 @@ export default function InvestmentsPage() {
     }
   };
 
-  const allProjects = getFilteredProjects();
+  const allProjects = projects;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -164,55 +198,36 @@ export default function InvestmentsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-wrap gap-4 mb-8">
           <button
-            onClick={() => setFilter("all")}
+            onClick={() => {
+              setFilter("all");
+              setSelectedCategory("all");
+            }}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              filter === "all"
+              selectedCategory === "all"
                 ? "bg-green-600 text-white"
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
             }`}
           >
             All Projects
           </button>
-          <button
-            onClick={() => setFilter("cow")}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              filter === "cow"
-                ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <GiCow /> Cow Farming
-          </button>
-          <button
-            onClick={() => setFilter("goat")}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              filter === "goat"
-                ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <GiGoat /> Goat Farming
-          </button>
-          <button
-            onClick={() => setFilter("chicken")}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              filter === "chicken"
-                ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <GiChicken /> Chicken Farming
-          </button>
-          <button
-            onClick={() => setFilter("crop")}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              filter === "crop"
-                ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <FaSeedling /> Crop Farming
-          </button>
+
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => {
+                setSelectedCategory(category.name);
+                setFilter("all");
+              }}
+              className={`px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                selectedCategory === category.name
+                  ? "bg-green-600 text-white"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <span className="text-xl">{getCategoryIcon(category)}</span>
+              {category.name}
+            </button>
+          ))}
         </div>
 
         {/* Islamic Finance Info */}
@@ -242,18 +257,6 @@ export default function InvestmentsPage() {
           </div>
         </div>
 
-        {/* Featured Projects Badge */}
-        {!loading && allProjects.some((p) => p.status === "featured") && (
-          <div className="mb-6">
-            <div className="inline-flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium border">
-              <span>
-                <FaStar />
-              </span>
-              <span>Featured Investment Opportunities</span>
-            </div>
-          </div>
-        )}
-
         {/* Projects Grid */}
         {loading ? (
           <div className="text-center py-12">
@@ -277,122 +280,163 @@ export default function InvestmentsPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allProjects.map((project) => (
-              <div
-                key={project.id}
-                className={`bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow ${
-                  project.status === "featured"
-                    ? "border-l-4 border-l-gray-400"
-                    : ""
-                }`}
-              >
-                {project.status === "featured" && (
-                  <div className="bg-gray-100 text-gray-700 text-center py-1 text-xs font-medium border-b">
-                    <FaStar /> Featured Project
-                  </div>
-                )}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-3xl">
-                        {getProjectIcon(project.project_type)}
-                      </span>
-                      <div>
-                        <h3 className="text-lg font-semibold">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          by {project.farmer_name}
-                        </p>
+            {allProjects.map((project) => {
+              // Get first project image if available
+              const projectImage = project.project_images
+                ? project.project_images.split(",")[0]
+                : null;
+              console.log("projectImage", project);
+              const imageUrl = projectImage
+                ? `http://localhost:4000/public/${projectImage}`
+                : null;
+
+              return (
+                <div
+                  key={project.id}
+                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                >
+                  {/* Project Image */}
+                  {imageUrl && (
+                    <div className="h-48 overflow-hidden bg-gray-100">
+                      <img
+                        src={imageUrl}
+                        alt={project.project_name}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-3xl">
+                          {getProjectIcon(project.project_type)}
+                        </span>
+                        <div>
+                          <h3 className="text-lg font-semibold">
+                            {project.title || project.project_name}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            by {project.farmer_name}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {hasUserInvested(project.id) && (
+                          <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 flex items-center gap-1">
+                            <FaCheck /> Already Booked
+                          </span>
+                        )}
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(
+                            project.risk_level
+                          )}`}
+                        >
+                          {project.risk_level} risk
+                        </span>
                       </div>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(
-                        project.risk_level
-                      )}`}
-                    >
-                      {project.risk_level} risk
-                    </span>
-                  </div>
 
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {project.description || project.why_fund_with_krishibazar}
+                    </p>
 
-                  <div className="space-y-3 mb-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Funding Goal:</span>
-                      <span className="font-semibold">
-                        {formatCurrency(project.total_fund_needed)}
-                      </span>
+                    <div className="space-y-3 mb-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Per Unit Price:</span>
+                        <span className="font-semibold">
+                          {formatCurrency(
+                            project.per_unit_price || project.total_fund_needed
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Duration:</span>
+                        <span>{project.duration_months} months</span>
+                      </div>
+
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Expected Returns:</span>
+                        <span className="font-semibold text-green-600">
+                          {project.earning_percentage ||
+                            project.expected_return_percent}
+                          %
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Location:</span>
+                        <span>
+                          {project.farmer_location || project.farmer_address}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Total Returnable:</span>
+                        <span className="font-semibold text-green-600">
+                          {formatCurrency(project.total_returnable_per_unit)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Units Available:</span>
+                        <span
+                          className={`font-semibold ${
+                            (project.available_units || 0) === 0
+                              ? "text-red-600"
+                              : "text-blue-600"
+                          }`}
+                        >
+                          {project.available_units || 0} units
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Duration:</span>
-                      <span>{project.duration_months} months</span>
+                    {/* Investment Info */}
+                    <div className="mb-4">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="text-center">
+                          <p className="text-sm text-green-700 font-medium">
+                            Ready for Investment
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            This project is approved and ready for funding
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Expected Returns:</span>
-                      <span className="font-semibold text-green-600">
-                        {project.expected_return_percent}%
-                      </span>
+                    <div className="flex space-x-3">
+                      <Link
+                        href={`/investments/${project.id}`}
+                        className="flex-1 text-center bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
+                      {(project.available_units || 0) > 0 ? (
+                        <Link
+                          href={`/investments/${project.id}/invest`}
+                          className="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
+                        >
+                          Invest Now
+                        </Link>
+                      ) : (
+                        <button
+                          disabled
+                          className="flex-1 text-center bg-gray-400 text-white py-2 px-4 rounded cursor-not-allowed"
+                        >
+                          Sold Out
+                        </button>
+                      )}
                     </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Location:</span>
-                      <span>{project.farmer_location}</span>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Funding Progress</span>
-                      <span>{calculateProgress(project).toFixed(1)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full transition-all"
-                        style={{
-                          width: `${Math.min(
-                            calculateProgress(project),
-                            100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between text-xs mt-1 text-gray-500">
-                      <span>
-                        {formatCurrency(project.current_funded || 0)} raised
-                      </span>
-                      <span>
-                        {formatCurrency(
-                          project.total_fund_needed -
-                            (project.current_funded || 0)
-                        )}{" "}
-                        remaining
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3">
-                    <Link
-                      href={`/investments/${project.id}`}
-                      className="flex-1 text-center bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                    <Link
-                      href={`/investments/${project.id}/invest`}
-                      className="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
-                    >
-                      Invest Now
-                    </Link>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

@@ -44,14 +44,12 @@ const NavBar = () => {
 
   const handleProfileClick = () => {
     if (user) {
-      if (!user.is_approved) {
-        router.push("/profile/pending");
+      if (!user.is_approved || user.is_approved === 0) {
+        // Route to main profile page which handles pending state
+        router.push("/profile");
       } else {
-        if (user.usertype === 1) {
-          router.push("/profile/farmer");
-        } else if (user.usertype === 2) {
-          router.push("/profile/investor");
-        }
+        // For approved users, go to investor profile to see investments
+        router.push("/profile");
       }
     }
     setIsDropdownOpen(false);

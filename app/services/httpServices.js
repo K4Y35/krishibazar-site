@@ -3,7 +3,8 @@ import apiUrls from "../config/apiUrls";
 
 
 const instance = axios.create({
-  baseURL: `${apiUrls.base_url}`,
+  // Route all requests through Next.js API routes
+  baseURL: "/api",
   timeout: 500000,
   headers: {
     Accept: "application/json",
@@ -14,24 +15,22 @@ const instance = axios.create({
 // Add a request interceptor
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("krishibazaar-token");
+    // Don't set Content-Type for FormData - let browser set it automatically
+    const headers = { ...config.headers };
+    if (config.data instanceof FormData) {
+      delete headers["Content-Type"];
+    }
+
     return {
       ...config,
-      headers: {
-        ...config.headers,
-        Authorization: token ? `Bearer ${token}` : undefined,
-      },
+      headers,
+      withCredentials: true,
     };
   },
-  (requestError) => {
-    console.log(requestError.response, "requestError");
-    // Here probably need to have a return
-    if (requestError.response.status == 401) {
-      // navigation
-    } else {
+    (requestError) => {
+      console.log(requestError?.response, "requestError");
       return requestError;
     }
-  }
 );
 
 instance.interceptors.response.use(
@@ -39,13 +38,15 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 403) {
-      // toast.error(error.response.data?.message || "You do not have permission!");
+    if (error?.response?.status === 403) {
       // window.history.back();
     }
     if (error?.response?.status === 401) {
-      localStorage.removeItem("krishibazaar-user");
-      localStorage.removeItem("krishibazaar-token");
+      try {
+        localStorage.removeItem("krishibazaar-user");
+        localStorage.removeItem("krishibazaar-status");
+        localStorage.removeItem("krishibazaar-user-id");
+      } catch {}
       window.location.href = "/login";
     }
     return Promise.reject(error);

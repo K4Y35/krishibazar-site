@@ -31,15 +31,13 @@ export const useRegister = () => {
       phone: "",
       password: "",
       confirmPassword: "",
-      usertype: "",
+
       address: "",
       nid_front: "",
       nid_back: "",
     },
     mode: "onChange",
   });
-
-  const watchedUserType = watch("usertype");
 
   const handleImageChange = async (e) => {
     const { name, files } = e.target;
@@ -51,14 +49,13 @@ export const useRegister = () => {
           ...prev,
           [name]: previewUrl,
         }));
-        
+
         // Upload image to server
         const response = await userServices.imageUpload(files[0]);
+        console.log("image upload response", response);
         const uploadedFilename = response.data[0].filename;
-        
-        setValue(name, uploadedFilename);
 
-        
+        setValue(name, uploadedFilename);
       } catch (error) {
         console.error(`Error uploading ${name}:`, error);
 
@@ -69,10 +66,6 @@ export const useRegister = () => {
         toast.error(`Failed to upload ${name}. Please try again.`);
       }
     }
-  };
-
-  const updateUserType = (usertype) => {
-    setValue("usertype", usertype);
   };
 
   const resetForm = () => {
@@ -95,10 +88,11 @@ export const useRegister = () => {
       setLoading(true);
       const formData = getValues();
       const response = await userServices.register(formData);
+      console.log("response", response);
       if (response?.success) {
         toast.success(response.message || "Registration successful");
-        const phone = response?.data?.phone || formData.phone;
-        router.push(`/auth/verify-otp?phone=${encodeURIComponent(phone)}`);
+        const email = response?.email || formData.email;
+        router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
       } else {
         toast.error(response?.message || "Registration failed");
       }
@@ -111,8 +105,8 @@ export const useRegister = () => {
 
   const handleImageUpload = async (fieldName, file) => {
     const response = await userServices.imageUpload(file);
-    setValue(fieldName, response.data[0].filename);
     console.log("image upload response", response);
+    setValue(fieldName, response.data[0].filename);
   };
 
   useEffect(() => {
@@ -129,9 +123,7 @@ export const useRegister = () => {
     imagePreview,
     loading,
     success,
-    watchedUserType,
     handleImageChange,
-    updateUserType,
     removeImage,
     formState,
     handleRegister,

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import {
@@ -18,7 +18,32 @@ import {
 } from "react-icons/fa";
 
 const ProductsPage = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "http://localhost:4000/api/products?type=product"
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts(data.data?.products || []);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     {
@@ -26,97 +51,6 @@ const ProductsPage = () => {
       label: "All Products",
       icon: <FaShoppingCart />,
       color: "gray",
-    },
-    {
-      id: "vegetables",
-      label: "Vegetables",
-      icon: <FaSeedling />,
-      color: "green",
-    },
-    { id: "grains", label: "Rice", icon: <FaSeedling />, color: "amber" },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      name: "Fresh Tomatoes",
-      category: "vegetables",
-      price: 45,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 5000,
-      image: "/images/tomatoes.jpg",
-      inStock: true,
-      description:
-        "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption.",
-      nutritionalInfo: "Rich in Vitamin C, Lycopene, and Potassium",
-      harvestDate: "2024-03-10",
-      shelfLife: "7-10 days",
-      farmer: "Hassan Ali Farm",
-      certifications: ["Organic", "Pesticide-Free"],
-      rating: 4.8,
-      reviews: 127,
-    },
-    {
-      id: 2,
-      name: "Red Onions",
-      category: "vegetables",
-      price: 35,
-      unit: "per kg",
-      minOrder: 100,
-      maxOrder: 3000,
-      image: "/images/redOnion.jpg",
-      inStock: true,
-      description:
-        "Fresh, pungent red onions with excellent storage life and rich flavor.",
-      nutritionalInfo: "High in Vitamin C, Fiber, and Antioxidants",
-      harvestDate: "2024-03-08",
-      shelfLife: "30-45 days",
-      farmer: "Malik Brothers Farm",
-      certifications: ["Natural", "Non-GMO"],
-      rating: 4.6,
-      reviews: 89,
-    },
-    {
-      id: 3,
-      name: "Potato Premium",
-      category: "vegetables",
-      price: 30,
-      unit: "per kg",
-      minOrder: 200,
-      maxOrder: 10000,
-      image: "/images/potatoes.jpg",
-      inStock: true,
-      description:
-        "High-quality potatoes, ideal for cooking, frying, and commercial use.",
-      nutritionalInfo: "Rich in Carbohydrates, Vitamin C, and Potassium",
-      harvestDate: "2024-03-05",
-      shelfLife: "45-60 days",
-      farmer: "Mountain View Farms",
-      certifications: ["Organic", "Premium Grade"],
-      rating: 4.9,
-      reviews: 203,
-    },
-
-    {
-      id: 6,
-      name: "Basmati Rice",
-      category: "grains",
-      price: 120,
-      unit: "per kg",
-      minOrder: 500,
-      maxOrder: 50000,
-      image: "/images/rice.jpeg",
-      inStock: true,
-      description:
-        "Premium aged Basmati rice with long grains and aromatic fragrance.",
-      nutritionalInfo: "Rich in Carbohydrates and Protein",
-      harvestDate: "2023-11-15",
-      shelfLife: "12-18 months",
-      farmer: "Golden Grain Cooperative",
-      certifications: ["Aged 2 Years", "Export Quality"],
-      rating: 4.9,
-      reviews: 342,
     },
   ];
 
@@ -239,7 +173,6 @@ const ProductsPage = () => {
         <section className="py-8 bg-white/70">
           <div className="container mx-auto px-4">
             <div className="flex justify-center">
-              {/* Category Filter */}
               <div className="flex flex-wrap gap-3">
                 {categories.map((category) => (
                   <button
@@ -263,165 +196,143 @@ const ProductsPage = () => {
         {/* Products Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            >
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product.id}
-                  variants={itemVariants}
-                  className="group bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(
-                          product.category
-                        )}`}
-                      >
-                        {
-                          categories.find((cat) => cat.id === product.category)
-                            ?.icon
-                        }
-                      </span>
-                    </div>
-                    <div className="absolute top-3 right-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          product.inStock
-                            ? "bg-green-100 text-green-700 border border-green-200"
-                            : "bg-red-100 text-red-700 border border-red-200"
-                        }`}
-                      >
-                        {product.inStock ? "In Stock" : "Out of Stock"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                <p className="mt-4 text-gray-600">Loading products...</p>
+              </div>
+            ) : (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              >
+                {filteredProducts.map((product) => (
+                  <motion.div
+                    key={product.id}
+                    variants={itemVariants}
+                    className="group bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      {product.product_images ? (
+                        <img
+                          src={`http://localhost:4000/public/${
+                            product.product_images.split(",")[0]
+                          }`}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <FaBox className="text-4xl text-gray-400" />
+                        </div>
+                      )}
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2 py-1 bg-white/80 rounded-full text-xs font-semibold border border-gray-200">
+                          {product.category}
+                        </span>
+                      </div>
+                      <div className="absolute top-3 right-3">
                         <span
-                          key={i}
-                          className={`text-sm ${
-                            i < Math.floor(product.rating)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
+                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            product.in_stock
+                              ? "bg-green-100 text-green-700 border border-green-200"
+                              : "bg-red-100 text-red-700 border border-red-200"
                           }`}
                         >
-                          <FaStar />
-                        </span>
-                      ))}
-                      <span className="text-xs text-gray-500 ml-1">
-                        ({product.reviews})
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
-                      {product.name}
-                    </h3>
-
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-2xl font-bold text-green-600">
-                          TK{product.price}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {product.unit}
+                          {product.in_stock ? "In Stock" : "Out of Stock"}
                         </span>
                       </div>
+                    </div>
 
-                      <div className="text-xs text-gray-600">
-                        <div>Min Order: {product.minOrder}kg</div>
-                        <div>Farmer: {product.farmer}</div>
+                    <div className="p-6">
+                      {product.rating && (
+                        <div className="flex items-center gap-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <span
+                              key={i}
+                              className={`text-sm ${
+                                i < Math.floor(product.rating || 0)
+                                  ? "text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            >
+                              <FaStar />
+                            </span>
+                          ))}
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({product.reviews || 0})
+                          </span>
+                        </div>
+                      )}
+
+                      <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
+                        {product.name}
+                      </h3>
+
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {product.description || "Premium quality fresh product"}
+                      </p>
+
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-2xl font-bold text-green-600">
+                            ৳{product.price}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {product.unit}
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-gray-600">
+                          <div>
+                            Min Order: {product.min_order}
+                            {product.unit}
+                          </div>
+                          {product.farmer && (
+                            <div>Farmer: {product.farmer}</div>
+                          )}
+                        </div>
                       </div>
+
+                      {product.certifications && (
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {product.certifications
+                            .split(",")
+                            .map((cert, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                              >
+                                {cert.trim()}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+
+                      <Link href={`/products/${product.id}`}>
+                        <button className="w-full py-3 rounded-lg font-semibold transition-colors bg-green-600 text-white hover:bg-green-700">
+                          View Details & Order
+                        </button>
+                      </Link>
                     </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
 
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {product.certifications.map((cert, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
-                        >
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-
-                    <button
-                      disabled={!product.inStock}
-                      className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                        product.inStock
-                          ? "bg-green-600 text-white hover:bg-green-700"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
-                    >
-                      {product.inStock ? "Add to Quote" : "Out of Stock"}
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Bulk Order Section */}
-        <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center max-w-4xl mx-auto"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Need Bulk Quantities?
-              </h2>
-              <p className="text-green-100 text-lg mb-8">
-                Get special pricing for large orders. Contact our sales team for
-                custom quotes and wholesale pricing.
-              </p>
-
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                  <div className="text-4xl mb-4">
-                    <FaPhone />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Call Us</h3>
-                  <p className="text-green-100">+92-xxx-xxx-xxxx</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                  <div className="text-4xl mb-4">
-                    <FaEnvelope />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Email</h3>
-                  <p className="text-green-100">sales@krishibazaar.com</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                  <div className="text-4xl mb-4">💬</div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    WhatsApp
-                  </h3>
-                  <p className="text-green-100">+92-xxx-xxx-xxxx</p>
-                </div>
+            {!loading && filteredProducts.length === 0 && (
+              <div className="text-center py-20 text-gray-500">
+                <FaBox className="text-6xl mx-auto mb-4 text-gray-300" />
+                <p className="text-xl">No products found</p>
               </div>
-            </motion.div>
+            )}
           </div>
         </section>
+
+        <Footer />
       </div>
     </>
   );

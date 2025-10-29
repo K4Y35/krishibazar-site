@@ -9,6 +9,9 @@ import Footer from "../components/Footer";
 const BlogPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  // Helper function to get icon (returns emoji as-is for now)
+  const getIcon = (icon) => icon;
+
   const categories = [
     { id: "all", label: "All Articles", icon: "📚", color: "gray" },
     { id: "seasonal", label: "Seasonal Tips", icon: "🌱", color: "green" },

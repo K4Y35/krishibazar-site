@@ -19,63 +19,84 @@ export const useSiteContext = () => {
 // Provider component
 export const SiteProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userStatus, setUserStatus] = useState(null);
   const router = useRouter();
 
-  // Initialize user state from localStorage on mount
   useEffect(() => {
     initializeAuth();
   }, []);
 
   const initializeAuth = () => {
     try {
-      const storedToken = localStorage.getItem("krishibazaar-token");
       const storedUser = localStorage.getItem("krishibazaar-user");
+      const storedStatus = localStorage.getItem("krishibazaar-status");
 
-      if (storedToken && storedUser) {
-        const userData = JSON.parse(storedUser);
-        setToken(storedToken);
-        setUser(userData);
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          setIsAuthenticated(true);
+        } catch (e) {
+          // ignore corrupted user and clear below
+        }
+      } else if (storedStatus === "pending") {
+        setUserStatus("pending");
         setIsAuthenticated(true);
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            setUser(userData);
+          } catch {}
+        }
       }
     } catch (error) {
-      console.error("Error initializing auth:", error);
-      // Clear corrupted data
-      localStorage.removeItem("krishibazaar-token");
       localStorage.removeItem("krishibazaar-user");
+      localStorage.removeItem("krishibazaar-status");
     } finally {
       setLoading(false);
     }
   };
 
-  // Login function
   const handleLogin = async (credentials) => {
     try {
       setLoading(true);
       const response = await userServices.login(credentials);
-      console.log(response, "response");
 
       if (response?.success) {
-        const { token: newToken, user: userData } = response.data;
+        const payload = response?.data || response;
+        const { user: userData, userStatus: status } = payload || {};
 
-        // Store in localStorage
-        localStorage.setItem("krishibazaar-token", newToken);
-        localStorage.setItem("krishibazaar-user", JSON.stringify(userData));
+        if (status === "pending") {
+          setUserStatus("pending");
+          setIsAuthenticated(true);
+          localStorage.setItem("krishibazaar-status", "pending");
+          if (userData) {
+            setUser(userData);
+            localStorage.setItem("krishibazaar-user", JSON.stringify(userData));
+          }
+          toast.success(response.message || "Login successful");
+          return { success: true, user: userData };
+        }
 
-        // Update state
-        setToken(newToken);
-        setUser(userData);
-        setIsAuthenticated(true);
+        if (userData) {
+          localStorage.setItem("krishibazaar-user", JSON.stringify(userData));
+          localStorage.removeItem("krishibazaar-status");
 
-        toast.success(response.message || "Login successful");
-        return { success: true, user: userData };
+          setUser(userData);
+          setIsAuthenticated(true);
+          setUserStatus(null);
+
+          toast.success(response.message || "Login successful");
+          return { success: true, user: userData };
+        }
+
+        return { success: false, message: "Invalid login response" };
       } else {
         return { success: false, message: response?.message || "Login failed" };
       }
     } catch (error) {
-      console.error("Login error:", error);
       return {
         success: false,
         message:
@@ -86,49 +107,24 @@ export const SiteProvider = ({ children }) => {
     }
   };
 
-  // Logout function
-  const logout = () => {
-    // Clear localStorage
-    localStorage.removeItem("krishibazaar-token");
+  const logout = async () => {
+    try {
+      await userServices.logout();
+    } catch {}
     localStorage.removeItem("krishibazaar-user");
-
-    // Clear state
-    setToken(null);
+    localStorage.removeItem("krishibazaar-status");
     setUser(null);
     setIsAuthenticated(false);
+    setUserStatus(null);
 
-    // Redirect to home
     router.push("/");
   };
 
-  // Update user data
   const updateUser = (userData) => {
     setUser(userData);
     localStorage.setItem("krishibazaar-user", JSON.stringify(userData));
   };
 
-  // Redirect user based on their role and approval status
-  const redirectByRole = () => {
-    if (!user) {
-      router.push("/");
-      return;
-    }
-
-    if (!isUserApproved()) {
-      router.push("/profile/pending");
-      return;
-    }
-
-    if (isFarmer()) {
-      router.push("/profile/farmer");
-    } else if (isInvestor()) {
-      router.push("/profile/investor");
-    } else {
-      router.push("/");
-    }
-  };
-
-  // Verify OTP
   const verifyOtp = async (otpData) => {
     try {
       setLoading(true);
@@ -155,18 +151,14 @@ export const SiteProvider = ({ children }) => {
   };
 
   const value = {
-    // State
     user,
-    token,
     loading,
     isAuthenticated,
-
-    // Actions
+    userStatus,
     handleLogin,
     logout,
     verifyOtp,
     updateUser,
-    redirectByRole,
   };
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;

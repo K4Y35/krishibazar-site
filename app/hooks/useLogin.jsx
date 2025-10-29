@@ -10,13 +10,10 @@ export const useLogin = () => {
   const {
     handleLogin,
     isUserApproved,
-    getUserType,
-    isFarmer,
-    isInvestor,
     verifyOtp,
   } = useSiteContext();
 
-  const [formData, setFormData] = useState({ phone: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [otpRequired, setOtpRequired] = useState(false);
@@ -26,19 +23,6 @@ export const useLogin = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const redirectByRole = (user) => {
-    if (!user.is_approved) {
-      router.push("/profile/pending");
-      return;
-    }
-    if (user.userType == 1) {
-      router.push("/profile/farmer");
-    } else if (user.userType == 2) {
-      router.push("/profile/investor");
-    } else {
-      router.push("/");
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,20 +31,18 @@ export const useLogin = () => {
 
     try {
       const response = await handleLogin({
-        phone: formData.phone,
+        email: formData.email,
         password: formData.password,
       });
 
+
       if (response?.success) {
-        redirectByRole(response.user);
+        router.push("/profile");
       } else {
         if (response?.message === "Please verify your phone number first") {
-          // Prefer dedicated OTP page flow
           router.push(
-            `/verify-otp?phone=${encodeURIComponent(formData.phone)}`
+            `/verify-otp?email=${encodeURIComponent(formData.email)}`
           );
-          // If you want inline OTP instead, uncomment below
-          // setOtpRequired(true);
         } else {
           setError(response?.message || "Login failed");
         }
@@ -84,12 +66,11 @@ export const useLogin = () => {
 
     try {
       const response = await verifyOtp({
-        phone: formData.phone,
+        email: formData.email,
         otp_code: otp,
       });
 
       if (response?.success) {
-        // After successful verification, attempt login again
         await handleSubmit(new Event("submit"));
       } else {
         setError(response?.message || "OTP verification failed");

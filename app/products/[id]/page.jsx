@@ -1,88 +1,203 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useSiteContext } from "../../context/SiteContext";
 import NavBar from "../../components/NavBar";
 import Footer from "../../components/Footer";
-import { FaStar, FaUserFriends } from "react-icons/fa";
+import {
+  FaStar,
+  FaUserFriends,
+  FaShoppingCart,
+  FaCheckCircle,
+} from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const ProductDetail = () => {
   const params = useParams();
   const productId = params.id;
-  const [quantity, setQuantity] = useState(100);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [orderQuantity, setOrderQuantity] = useState(1);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderFormData, setOrderFormData] = useState({
+    customer_name: "",
+    customer_phone: "",
+    customer_email: "",
+    delivery_address: "",
+    notes: "",
+    payment_method: "cash_on_delivery",
+  });
+  const { isAuthenticated, user } = useSiteContext();
 
-  // This would typically come from an API or database
-  const product = {
-    id: productId,
-    name: "Fresh Tomatoes",
-    category: "vegetables",
-    price: 45,
-    unit: "per kg",
-    minOrder: 100,
-    maxOrder: 5000,
-    image: "/images/vege1.png",
+  useEffect(() => {
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
 
-    origin: "Punjab Farms",
-    inStock: true,
-    description:
-      "Premium quality vine-ripened tomatoes, perfect for cooking and fresh consumption. These tomatoes are carefully selected from the best farms in Punjab and are known for their rich flavor, vibrant color, and nutritional value.",
-    nutritionalInfo: "Rich in Vitamin C, Lycopene, and Potassium",
-    harvestDate: "2024-03-10",
-    shelfLife: "7-10 days",
-    farmer: "Hassan Ali Farm",
-    certifications: ["Organic", "Pesticide-Free"],
-    rating: 4.8,
-    reviews: 127,
-    images: ["/images/vege1.png", "/images/vege2.png", "/images/vege3.png"],
-    specifications: {
-      Variety: "Roma Tomatoes",
-      Size: "Medium to Large",
-      Color: "Deep Red",
-      Moisture: "92-94%",
-      "pH Level": "4.2-4.9",
-      Storage: "Cool, dry place",
-    },
-    farmerDetails: {
-      name: "Hassan Ali",
-      experience: "15 years",
-      farmSize: "50 acres",
-      location: "District Sahiwal, Punjab",
-      contact: "+92-xxx-xxx-xxxx",
-    },
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setOrderFormData({
+        customer_name: `${user.first_name || ""} ${
+          user.last_name || ""
+        }`.trim(),
+        customer_phone: user.phone || "",
+        customer_email: user.email || "",
+        delivery_address: "",
+        notes: "",
+        payment_method: "cash_on_delivery",
+      });
+    }
+  }, [isAuthenticated, user]);
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:4000/api/products/${productId}`
+      );
+      const data = await response.json();
+      if (data.success) {
+        setProduct(data.data);
+        setQuantity(data.data.min_order || 1);
+        setOrderQuantity(data.data.min_order || 1);
+      } else {
+        toast.error("Product not found");
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      toast.error("Failed to load product details");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const relatedProducts = [
-    {
-      id: 2,
-      name: "Red Onions",
-      price: 35,
-      image: "/images/vege2.png",
-      minOrder: 100,
-    },
-    {
-      id: 3,
-      name: "Potato Premium",
-      price: 30,
-      image: "/images/vege3.png",
-      minOrder: 200,
-    },
-    {
-      id: 4,
-      name: "Fresh Garlic",
-      price: 180,
-      image: "/images/vege4.png",
-      minOrder: 50,
-    },
-  ];
+  const handleOrder = async () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to place an order");
+      return;
+    }
 
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value) || product.minOrder;
-    setQuantity(Math.max(value, product.minOrder));
+    if (!product.in_stock) {
+      toast.error("Product is currently out of stock");
+      return;
+    }
+
+    if (orderQuantity < product.min_order) {
+      toast.error(`Minimum order is ${product.min_order}`);
+      return;
+    }
+
+    if (product.max_order && orderQuantity > product.max_order) {
+      toast.error(`Maximum order is ${product.max_order}`);
+      return;
+    }
+
+    if (product.quantity && orderQuantity > product.quantity) {
+      toast.error(`Only ${product.quantity} units available`);
+      return;
+    }
+
+    // Show order form
+    setShowOrderForm(true);
   };
 
-  const totalPrice = quantity * product.price;
+  const handleSubmitOrder = async (e) => {
+    e.preventDefault();
+
+    if (
+      !orderFormData.customer_name ||
+      !orderFormData.customer_phone ||
+      !orderFormData.delivery_address
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      const loadingToast = toast.loading("Placing your order...");
+
+      const response = await fetch(
+        `/api/proxy?path=${encodeURIComponent("/user/orders")}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            product_id: product.id,
+            order_quantity: orderQuantity,
+            unit_price: product.price,
+            total_price: totalPrice,
+            customer_name: orderFormData.customer_name,
+            customer_phone: orderFormData.customer_phone,
+            customer_email: orderFormData.customer_email,
+            delivery_address: orderFormData.delivery_address,
+            notes: orderFormData.notes,
+            payment_method: orderFormData.payment_method,
+          }),
+        }
+      );
+
+      toast.dismiss(loadingToast);
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Order placed successfully! We will contact you soon.");
+        setShowOrderForm(false);
+
+        // Refresh product data to show updated stock
+        await fetchProduct();
+      } else {
+        toast.error(data.message || "Failed to place order");
+      }
+    } catch (error) {
+      toast.error("Failed to place order. Please try again.");
+      console.error(error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <NavBar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            <p className="mt-4 text-gray-600">Loading product details...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (!product) {
+    return (
+      <>
+        <NavBar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-gray-800 mb-4">
+              Product not found
+            </p>
+            <Link
+              href="/products"
+              className="text-green-600 hover:text-green-700"
+            >
+              ← Back to Products
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const totalPrice = orderQuantity * product.price;
 
   return (
     <>
@@ -112,13 +227,20 @@ const ProductDetail = () => {
                 {/* Product Images */}
                 <div className="space-y-6">
                   <div className="relative h-96 rounded-2xl overflow-hidden bg-white shadow-lg">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                    {!product.inStock && (
+                    {product.product_images ? (
+                      <img
+                        src={`http://localhost:4000/public/${
+                          product.product_images.split(",")[0]
+                        }`}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <FaShoppingCart className="text-6xl text-gray-400" />
+                      </div>
+                    )}
+                    {!product.in_stock && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                         <span className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold">
                           Out of Stock
@@ -127,21 +249,26 @@ const ProductDetail = () => {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    {product.images.map((img, index) => (
-                      <div
-                        key={index}
-                        className="relative h-24 rounded-lg overflow-hidden bg-white shadow-md cursor-pointer hover:shadow-lg transition-shadow"
-                      >
-                        <Image
-                          src={img}
-                          alt={`${product.name} ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
+                  {product.product_images &&
+                    product.product_images.split(",").length > 1 && (
+                      <div className="grid grid-cols-3 gap-4">
+                        {product.product_images
+                          .split(",")
+                          .slice(1, 4)
+                          .map((img, index) => (
+                            <div
+                              key={index}
+                              className="relative h-24 rounded-lg overflow-hidden bg-white shadow-md cursor-pointer hover:shadow-lg transition-shadow"
+                            >
+                              <img
+                                src={`http://localhost:4000/public/${img.trim()}`}
+                                alt={`${product.name} ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                  </div>
+                    )}
                 </div>
 
                 {/* Product Info */}
@@ -149,7 +276,17 @@ const ProductDetail = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                        🥬 {product.category}
+                        {product.type === "product" ? "🥬" : "🔧"}{" "}
+                        {product.category}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                          product.type === "product"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-purple-100 text-purple-700"
+                        }`}
+                      >
+                        {product.type === "product" ? "Product" : "Farm Supply"}
                       </span>
                     </div>
 
@@ -157,26 +294,29 @@ const ProductDetail = () => {
                       {product.name}
                     </h1>
 
-                    <div className="flex items-center gap-2 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <span
-                          key={i}
-                          className={`text-lg ${
-                            i < Math.floor(product.rating)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                        >
-                          <FaStar />
+                    {product.rating && (
+                      <div className="flex items-center gap-2 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <span
+                            key={i}
+                            className={`text-lg ${
+                              i < Math.floor(product.rating)
+                                ? "text-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          >
+                            <FaStar />
+                          </span>
+                        ))}
+                        <span className="text-gray-600 ml-2">
+                          ({product.reviews || 0} reviews)
                         </span>
-                      ))}
-                      <span className="text-gray-600 ml-2">
-                        ({product.reviews} reviews)
-                      </span>
-                    </div>
+                      </div>
+                    )}
 
                     <p className="text-gray-600 leading-relaxed mb-6">
-                      {product.description}
+                      {product.description ||
+                        "Premium quality product directly from verified sources."}
                     </p>
                   </div>
 
@@ -184,7 +324,7 @@ const ProductDetail = () => {
                   <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-3xl font-bold text-green-600">
-                        ₨{product.price}
+                        ৳{product.price}
                       </span>
                       <span className="text-gray-500">{product.unit}</span>
                     </div>
@@ -193,42 +333,71 @@ const ProductDetail = () => {
                       <div className="flex justify-between">
                         <span>Minimum Order:</span>
                         <span className="font-semibold">
-                          {product.minOrder}kg
+                          {product.min_order} {product.unit}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Maximum Order:</span>
-                        <span className="font-semibold">
-                          {product.maxOrder}kg
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Origin:</span>
-                        <span className="font-semibold">{product.origin}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Harvest Date:</span>
-                        <span className="font-semibold">
-                          {product.harvestDate}
-                        </span>
-                      </div>
+                      {product.max_order && (
+                        <div className="flex justify-between">
+                          <span>Maximum Order:</span>
+                          <span className="font-semibold">
+                            {product.max_order} {product.unit}
+                          </span>
+                        </div>
+                      )}
+                      {product.quantity && (
+                        <div className="flex justify-between">
+                          <span>Available Quantity:</span>
+                          <span className="font-semibold">
+                            {product.quantity}
+                          </span>
+                        </div>
+                      )}
+                      {product.farmer && (
+                        <div className="flex justify-between">
+                          <span>Farmer:</span>
+                          <span className="font-semibold">
+                            {product.farmer}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Quantity Selection */}
                     <div className="mb-6">
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Quantity (kg)
+                        Quantity
                       </label>
                       <input
                         type="number"
-                        min={product.minOrder}
-                        max={product.maxOrder}
-                        value={quantity}
-                        onChange={handleQuantityChange}
+                        min={product.min_order}
+                        max={Math.min(
+                          product.max_order || 10000,
+                          product.quantity || 10000
+                        )}
+                        value={orderQuantity}
+                        onChange={(e) => {
+                          const value =
+                            parseInt(e.target.value) || product.min_order;
+                          const maxAvailable = product.quantity || 10000;
+                          const maxAllowed = product.max_order
+                            ? Math.min(product.max_order, maxAvailable)
+                            : maxAvailable;
+                          setOrderQuantity(
+                            Math.min(
+                              Math.max(value, product.min_order),
+                              maxAllowed
+                            )
+                          );
+                        }}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Minimum order: {product.minOrder}kg
+                        Minimum order: {product.min_order} {product.unit}
+                        {product.quantity !== undefined && (
+                          <span className="ml-2 text-green-600">
+                            • {product.quantity} available
+                          </span>
+                        )}
                       </p>
                     </div>
 
@@ -239,7 +408,7 @@ const ProductDetail = () => {
                           Total Price:
                         </span>
                         <span className="text-2xl font-bold text-green-600">
-                          ₨{totalPrice.toLocaleString()}
+                          ৳{totalPrice.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -247,166 +416,281 @@ const ProductDetail = () => {
                     {/* Action Buttons */}
                     <div className="space-y-3">
                       <button
-                        disabled={!product.inStock}
+                        onClick={handleOrder}
+                        disabled={!product.in_stock}
                         className={`w-full py-4 rounded-lg font-bold text-lg transition-colors ${
-                          product.inStock
+                          product.in_stock
                             ? "bg-green-600 text-white hover:bg-green-700"
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                       >
-                        {product.inStock
-                          ? "Add to Quote Request"
-                          : "Out of Stock"}
+                        {product.in_stock &&
+                        product.quantity >= orderQuantity ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <FaShoppingCart /> Place Order
+                          </span>
+                        ) : product.quantity < orderQuantity ? (
+                          `Insufficient Stock (${product.quantity} available)`
+                        ) : (
+                          "Out of Stock"
+                        )}
                       </button>
 
-                      <button className="w-full py-4 border-2 border-green-600 text-green-600 rounded-lg font-bold text-lg hover:bg-green-50 transition-colors">
-                        Contact Farmer
-                      </button>
+                      <Link href="/contact">
+                        <button className="w-full py-4 border-2 border-green-600 text-green-600 rounded-lg font-bold text-lg hover:bg-green-50 transition-colors">
+                          Contact Sales
+                        </button>
+                      </Link>
                     </div>
                   </div>
 
                   {/* Certifications */}
-                  <div className="flex flex-wrap gap-2">
-                    {product.certifications.map((cert, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold"
-                      >
-                        ✓ {cert}
-                      </span>
-                    ))}
-                  </div>
+                  {product.certifications && (
+                    <div className="flex flex-wrap gap-2">
+                      {product.certifications.split(",").map((cert, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold"
+                        >
+                          <FaCheckCircle className="inline mr-1" />
+                          {cert.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Product Details Tabs */}
-              <div className="mt-16 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="grid md:grid-cols-3 gap-8 p-8">
-                  {/* Specifications */}
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                      Product Specifications
-                    </h3>
-                    <div className="space-y-3">
-                      {Object.entries(product.specifications).map(
-                        ([key, value]) => (
-                          <div
-                            key={key}
-                            className="flex justify-between py-2 border-b border-gray-100"
-                          >
-                            <span className="text-gray-600">{key}:</span>
+              {/* Product Details */}
+              {(product.nutritional_info ||
+                product.shelf_life ||
+                product.farmer) && (
+                <div className="mt-16 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                  <div className="grid md:grid-cols-3 gap-8 p-8">
+                    {/* Nutritional Info */}
+                    {product.nutritional_info && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                          Nutritional Information
+                        </h3>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <p className="text-green-700 leading-relaxed">
+                            {product.nutritional_info}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Shelf Life */}
+                    {product.shelf_life && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                          Storage Information
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between py-2 border-b border-gray-100">
+                            <span className="text-gray-600">Shelf Life:</span>
                             <span className="font-semibold text-gray-800">
-                              {value}
+                              {product.shelf_life}
                             </span>
                           </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Nutritional Info */}
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                      Nutritional Information
-                    </h3>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <p className="text-green-700 leading-relaxed">
-                        {product.nutritionalInfo}
-                      </p>
-                      <div className="mt-3 text-sm text-green-600">
-                        <p>• Natural source of essential vitamins</p>
-                        <p>• High antioxidant content</p>
-                        <p>• Low in calories, high in nutrients</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Farmer Details */}
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                      About the Farmer
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-2xl">
-                            <FaUserFriends />
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">
-                            {product.farmerDetails.name}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {product.farmerDetails.experience} farming
-                            experience
-                          </p>
                         </div>
                       </div>
-                      <div className="space-y-2 text-sm">
-                        <p>
-                          <span className="font-semibold">Farm Size:</span>{" "}
-                          {product.farmerDetails.farmSize}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Location:</span>{" "}
-                          {product.farmerDetails.location}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Contact:</span>{" "}
-                          {product.farmerDetails.contact}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    )}
 
-              {/* Related Products */}
-              <div className="mt-16">
-                <h2 className="text-3xl font-bold text-gray-800 mb-8">
-                  Related Products
-                </h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {relatedProducts.map((relatedProduct) => (
-                    <Link
-                      key={relatedProduct.id}
-                      href={`/products/${relatedProduct.id}`}
-                      className="group bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                    >
-                      <div className="relative h-48 overflow-hidden">
-                        <Image
-                          src={relatedProduct.image}
-                          alt={relatedProduct.name}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
-                          {relatedProduct.name}
+                    {/* Farmer Details */}
+                    {product.farmer && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                          Producer Details
                         </h3>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xl font-bold text-green-600">
-                            ₨{relatedProduct.price}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            Min: {relatedProduct.minOrder}kg
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">
+                              <FaUserFriends />
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800">
+                              {product.farmer}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </Link>
-                  ))}
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           </div>
         </section>
       </div>
 
       <Footer />
+
+      {/* Order Form Modal */}
+      {showOrderForm && product && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Place Your Order</h2>
+
+            {/* Order Summary */}
+            <div className="bg-green-50 p-4 rounded-lg mb-4">
+              <h3 className="font-semibold mb-2">Order Summary</h3>
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="font-medium">Product:</span> {product.name}
+                </p>
+                <p>
+                  <span className="font-medium">Quantity:</span> {orderQuantity}
+                </p>
+                <p>
+                  <span className="font-medium">Unit Price:</span> ৳
+                  {product.price}
+                </p>
+                <p className="text-lg font-bold text-green-600">
+                  <span className="font-semibold">Total:</span> ৳
+                  {totalPrice.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmitOrder} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  value={orderFormData.customer_name}
+                  onChange={(e) =>
+                    setOrderFormData({
+                      ...orderFormData,
+                      customer_name: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={orderFormData.customer_phone}
+                    onChange={(e) =>
+                      setOrderFormData({
+                        ...orderFormData,
+                        customer_phone: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={orderFormData.customer_email}
+                    onChange={(e) =>
+                      setOrderFormData({
+                        ...orderFormData,
+                        customer_email: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Delivery Address *
+                </label>
+                <textarea
+                  value={orderFormData.delivery_address}
+                  onChange={(e) =>
+                    setOrderFormData({
+                      ...orderFormData,
+                      delivery_address: e.target.value,
+                    })
+                  }
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  placeholder="Enter your complete delivery address"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Payment Method
+                </label>
+                <select
+                  value={orderFormData.payment_method}
+                  onChange={(e) =>
+                    setOrderFormData({
+                      ...orderFormData,
+                      payment_method: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                >
+                  <option value="cash_on_delivery">Cash on Delivery</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="mobile_banking">Mobile Banking</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Additional Notes (Optional)
+                </label>
+                <textarea
+                  value={orderFormData.notes}
+                  onChange={(e) =>
+                    setOrderFormData({
+                      ...orderFormData,
+                      notes: e.target.value,
+                    })
+                  }
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  placeholder="Any special instructions or notes..."
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <FaShoppingCart /> Place Order
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowOrderForm(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
-export default ProductDetail; 
+export default ProductDetail;
