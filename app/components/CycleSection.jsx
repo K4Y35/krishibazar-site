@@ -56,7 +56,7 @@ const CycleSection = () => {
       subtitle: "Project Proposal",
       icon: <FaClipboardList />,
       description:
-        "Farmers create detailed project proposals outlining their business plans and funding requirements.",
+        "Field worker reach farmers create detailed project proposals outlining their business plans and funding requirements.",
       items: [
         "Detailed business plan",
         "Investment amount needed",
@@ -357,24 +357,23 @@ const CycleSection = () => {
             </div>
 
             <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-              Ready to Start Your Journey?
+              Ready to Start Investing in Farms?
             </h3>
 
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of farmers and investors building a sustainable
-              agricultural future together
+              Join and invest in farms to support farmers and earn profits.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link
-                href="/auth/register?role=farmer"
+                href="/register"
                 className="group relative overflow-hidden bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 <span className="relative z-10 flex items-center">
                   <span className="text-2xl mr-3">
                     <FaSeedling />
                   </span>
-                  Submit Your Project
+                  Join as an Investor
                 </span>
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               </Link>

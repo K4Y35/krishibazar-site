@@ -17,15 +17,33 @@ async function handle(method, req) {
       .find(([k]) => k === "kb_access")?.[1];
 
     const headers = { Accept: "application/json" };
-    // Content-Type for JSON only when body is plain object
-    if (req.headers.get("content-type")?.includes("application/json")) {
+    const contentType = req.headers.get("content-type") || "";
+    // Only set JSON content-type explicitly. For FormData, let fetch set boundary.
+    if (contentType.includes("application/json")) {
       headers["Content-Type"] = "application/json";
     }
     if (token) {
       headers["Authorization"] = `Bearer ${decodeURIComponent(token)}`;
     }
 
-    const body = method === "GET" || method === "DELETE" ? undefined : await req.text();
+    let body;
+    if (method === "GET") {
+      body = undefined;
+    } else if (contentType.includes("multipart/form-data")) {
+      const incoming = await req.formData();
+      const fd = new FormData();
+      for (const [key, value] of incoming.entries()) {
+        fd.append(key, value);
+      }
+      body = fd;
+      // Do NOT set Content-Type header manually for multipart
+      delete headers["Content-Type"];
+    } else if (contentType.includes("application/json")) {
+      body = await req.text();
+    } else {
+      // Fallback: forward raw text/stream
+      body = await req.text();
+    }
 
     const backendResp = await fetch(`${BACKEND_BASE}${path}`, {
       method,

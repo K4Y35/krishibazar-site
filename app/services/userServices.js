@@ -62,7 +62,10 @@ const userServices = {
   },
 
   removeImage: async (filename) => {
-    return request.post(`/proxy?path=${encodeURIComponent(apiUrls.upload_image.remove)}`, { filename: filename });
+    return request.delete(
+      `/proxy?path=${encodeURIComponent(apiUrls.upload_image.remove)}`,
+      { filename: filename }
+    );
   },
 
   getUserDetails: async (id) => {

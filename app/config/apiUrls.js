@@ -11,8 +11,8 @@ const apiUrls = {
     resend_otp: "/user/auth/resend-otp",
   },
   upload_image: {
-    upload: "shared/upload-media",
-    remove: "shared/delete-image",
+    upload: "/shared/upload-media",
+    remove: "/shared/delete-media",
   },
   user: {
     get_user_details: "/user/get-user-details",

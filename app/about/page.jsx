@@ -4,7 +4,7 @@ import NavBar from '../components/NavBar';
 import Link from 'next/link';
 
 export default function AboutPage() {
-  // Helper function to get icon (returns emoji as-is)
+ 
   const getIcon = (icon) => icon;
 
   return (

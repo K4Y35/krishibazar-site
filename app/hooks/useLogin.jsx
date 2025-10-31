@@ -37,7 +37,7 @@ export const useLogin = () => {
 
 
       if (response?.success) {
-        router.push("/profile");
+        router.push("/");
       } else {
         if (response?.message === "Please verify your phone number first") {
           router.push(

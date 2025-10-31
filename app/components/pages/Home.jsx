@@ -4,6 +4,7 @@ import HeroContent from "../HeroContent";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   FaSeedling,
   FaDollarSign,
@@ -18,8 +19,9 @@ import {
   FaTimes,
   FaHandshake,
   FaCheckCircle,
+  FaSearch,
 } from "react-icons/fa";
-import { GiCow, GiFarmer } from "react-icons/gi";
+import { GiCow, GiFarmer, GiGoat, GiChicken } from "react-icons/gi";
 
 const buttonContainer = {
   hidden: { opacity: 0 },
@@ -45,6 +47,48 @@ const buttonItem = {
 };
 
 export default function Home() {
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        setLoadingFeatured(true);
+        const res = await fetch(
+          "http://localhost:4000/api/projects?status=approved&limit=3"
+        );
+        const data = await res.json();
+        if (data.success) {
+          setFeaturedProjects(data.data || []);
+        } else {
+          setFeaturedProjects([]);
+        }
+      } catch (e) {
+        setFeaturedProjects([]);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  const getProjectIcon = (type) => {
+    switch (type) {
+      case "cow":
+        return <GiCow />;
+      case "goat":
+        return <GiGoat />;
+      case "chicken":
+        return <GiChicken />;
+      case "crop":
+        return <FaSeedling />;
+      default:
+        return <GiFarmer />;
+    }
+  };
+
+  const formatCurrency = (amount) => `৳${Number(amount || 0).toLocaleString()}`;
+
   return (
     <>
       {/* Hero Section */}
@@ -401,92 +445,113 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {[
-              {
-                type: "Cow Fattening",
-                location: "Rangpur, Bangladesh",
-                funding: "৳50,000",
-                duration: "8 months",
-                returns: "15-20%",
-                risk: "Medium",
-              },
-              {
-                type: "Goat Farming",
-                location: "Sylhet, Bangladesh",
-                funding: "৳30,000",
-                duration: "6 months",
-                returns: "18-25%",
-                risk: "Low",
-              },
-              {
-                type: "Chicken Farming",
-                location: "Comilla, Bangladesh",
-                funding: "৳25,000",
-                duration: "4 months",
-                returns: "20-30%",
-                risk: "Medium",
-              },
-            ].map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className="bg-white p-6 rounded-lg shadow-lg"
-              >
-                <h3 className="text-xl font-semibold mb-3">{project.type}</h3>
-                <div className="space-y-2 text-sm text-gray-600 mb-4">
-                  <p>
-                    <span className="font-semibold">Location:</span>{" "}
-                    {project.location}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Funding Needed:</span>{" "}
-                    {project.funding}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Duration:</span>{" "}
-                    {project.duration}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Expected Returns:</span>{" "}
-                    {project.returns}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Risk Level:</span>
-                    <span
-                      className={`ml-2 px-2 py-1 rounded text-xs ${
-                        project.risk === "Low"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {project.risk}
-                    </span>
-                  </p>
-                </div>
-                <Link
-                  href="/investments"
-                  className="group block w-full text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
-                >
-                  View Details
-                  <svg
-                    className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+          {loadingFeatured ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading featured projects...</p>
+            </div>
+          ) : featuredProjects.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">
+                <FaSearch />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                No Projects Found
+              </h3>
+              <p className="text-gray-600">
+                Please check back later for new opportunities.
+              </p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8 mb-8">
+              {featuredProjects.map((project, index) => {
+                const projectImage = project.project_images
+                  ? project.project_images.split(",")[0]
+                  : null;
+                const imageUrl = projectImage
+                  ? `http://localhost:4000/public/${projectImage}`
+                  : null;
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.2 }}
+                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                    {imageUrl && (
+                      <div className="h-44 overflow-hidden bg-gray-100">
+                        <img
+                          src={imageUrl}
+                          alt={project.project_name}
+                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">
+                            {getProjectIcon(project.project_type)}
+                          </span>
+                          <h3 className="text-lg font-semibold">
+                            {project.title || project.project_name}
+                          </h3>
+                        </div>
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                          {project.risk_level || "medium"} risk
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-sm text-gray-600 mb-4">
+                        <p className="flex justify-between">
+                          <span>Per Unit:</span>
+                          <span className="font-semibold">
+                            {formatCurrency(
+                              project.per_unit_price ||
+                                project.total_fund_needed
+                            )}
+                          </span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span>Duration:</span>
+                          <span>{project.duration_months} months</span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span>Expected Returns:</span>
+                          <span className="font-semibold text-green-600">
+                            {project.earning_percentage ||
+                              project.expected_return_percent}
+                            %
+                          </span>
+                        </p>
+                      </div>
+                      <Link
+                        href={`/investments/${project.id}`}
+                        className="group block w-full text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
+                      >
+                        View Details
+                        <svg
+                          className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
 
           <motion.div
             className="text-center"
@@ -708,8 +773,7 @@ export default function Home() {
               Ready to Start Your Journey?
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join thousands of farmers and investors building a sustainable
-              agricultural economy through Islamic finance
+              Join and invest in farms to support farmers and earn profits.
             </p>
             <motion.div
               className="flex flex-col sm:flex-row gap-6 justify-center items-center"
@@ -720,31 +784,11 @@ export default function Home() {
             >
               <motion.div variants={buttonItem}>
                 <Link
-                  href="/auth/register?role=farmer"
+                  href="/register"
                   className="group inline-flex items-center bg-white text-green-600 hover:text-green-700 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 border border-green-200 hover:border-green-300 min-w-[200px] justify-center"
                 >
                   <FaSeedling className="mr-2" />
-                  Register as Farmer
-                  <svg
-                    className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Link>
-              </motion.div>
-              <motion.div variants={buttonItem}>
-                <Link
-                  href="/auth/register?role=investor"
-                  className="group inline-flex items-center bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-blue-500/30 hover:scale-105 border border-blue-600/20 min-w-[200px] justify-center"
-                >
-                  <FaDollarSign className="mr-2" />
-                  Register as Investor
+                  Join as an Investor
                   <svg
                     className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
                     fill="currentColor"
@@ -764,5 +808,5 @@ export default function Home() {
       </section>
     </>
   );
-};
+}
 

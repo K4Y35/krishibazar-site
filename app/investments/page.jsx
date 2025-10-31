@@ -330,13 +330,7 @@ export default function InvestmentsPage() {
                             <FaCheck /> Already Booked
                           </span>
                         )}
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(
-                            project.risk_level
-                          )}`}
-                        >
-                          {project.risk_level} risk
-                        </span>
+                       
                       </div>
                     </div>
 
